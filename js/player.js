@@ -46,12 +46,15 @@ const Player = {
       vx /= len; vy /= len;
       if (Math.abs(vx) > Math.abs(vy)) this.dir = (vx > 0) ? 'right' : 'left';
       else this.dir = (vy > 0) ? 'down' : 'up';
-      const spd = CONFIG.PLAYER_SPEED * (dt / 16.67);
+      
+      // ใช้ delta time แท้จริงเพื่อ smooth movement
+      const actualDt = Math.min(dt, 32); // จำกัดไม่ให้กระโดดมากเกินไป
+      const spd = CONFIG.PLAYER_SPEED * (actualDt / 16.67);
       const nx = this.sprite.x + vx * spd;
       const ny = this.sprite.y + vy * spd;
       if (!this._isBlocked(nx, this.sprite.y)) this.sprite.x = nx;
       if (!this._isBlocked(this.sprite.x, ny)) this.sprite.y = ny;
-      this.animTimer += dt;
+      this.animTimer += actualDt;
       if (this.animTimer > CONFIG.ANIM_SPEED) {
         this.animTimer = 0;
         this.frame = (this.frame + 1) % 4;

@@ -1,0 +1,276 @@
+/* ================================================================
+   mobile-fix.css — แก้ layout มือถือ + ป้องกัน touch ทะลุ
+   ================================================================ */
+
+/* ── Performance / touch base ── */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+html, body {
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+canvas {
+  will-change: transform;
+}
+#game-container {
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+.center-panel {
+  touch-action: none;
+}
+.left-panel,
+.right-panel {
+  -webkit-overflow-scrolling: touch;
+}
+/* ปุ่มกดทุกอย่างตัด delay 300ms */
+.tbtn,
+.btn-pixel,
+.mobile-side-btn,
+.machine-card,
+.res-box {
+  touch-action: manipulation;
+}
+
+/* ── Rotate overlay ── */
+#rotate-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0a1f0a;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.rotate-icon {
+  font-size: 56px;
+  animation: rotateHint 2s ease-in-out infinite;
+}
+@keyframes rotateHint {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(90deg); }
+}
+.rotate-text {
+  font-family: 'Sarabun', sans-serif;
+  font-size: 16px;
+  color: #c8f4b0;
+  text-align: center;
+  line-height: 1.6;
+}
+/* แสดงเฉพาะ portrait บนจอ ≤ 768px */
+@media (orientation: portrait) and (max-width: 768px) {
+  #rotate-overlay { display: flex !important; }
+}
+
+/* ================================================================
+   LANDSCAPE MOBILE (หน้าจอ ≤ 960px แนวนอน)
+   ================================================================ */
+@media (max-width: 960px) and (orientation: landscape) {
+
+  /* Top bar แคบลง */
+  .top-bar {
+    min-height: 46px;
+    padding: 4px 8px;
+    gap: 6px;
+  }
+  .factory-badge {
+    font-size: 10px;
+    padding: 5px 8px;
+  }
+  .res-box {
+    min-width: 56px;
+    padding: 3px 6px;
+    gap: 4px;
+  }
+  .res-icon { font-size: 16px; }
+  .res-tag  { font-size: 10px; }
+  .res-num  { font-size: 11px; }
+  .btn-pixel { font-size: 10px; padding: 6px 9px; }
+
+  /* HUD location */
+  .hud-location {
+    top: 8px;
+    font-size: 9px;
+    padding: 5px 10px;
+  }
+
+  /* ปุ่ม open-sidebar ให้เห็นชัด */
+  .mobile-side-controls {
+    top: 8px;
+  }
+  .mobile-side-btn {
+    width: 46px;
+    height: 42px;
+    font-size: 20px;
+  }
+
+  /* D-pad ขนาดเหมาะมือถือแนวนอน */
+  .touch-controls {
+    bottom: 6px;
+    left: 8px;
+    right: 8px;
+  }
+  .dpad {
+    grid-template-columns: repeat(3, 54px);
+    grid-template-rows: repeat(2, 54px);
+    gap: 5px;
+  }
+  .tbtn {
+    width: 54px;
+    height: 54px;
+    font-size: 22px;
+    border-width: 3px;
+    border-radius: 12px;
+  }
+  .touch-actions { gap: 8px; }
+  .t-act {
+    width: 64px;
+    height: 64px;
+    font-size: 28px;
+  }
+}
+
+/* ================================================================
+   SMALL LANDSCAPE (มือถือ height ≤ 480px)
+   ================================================================ */
+@media (max-width: 960px) and (max-height: 480px) and (orientation: landscape) {
+
+  .top-bar { min-height: 40px; padding: 3px 6px; }
+  .factory-badge { display: none; } /* ซ่อนป้ายชื่อ ประหยัดพื้นที่ */
+  .res-box { min-width: 50px; padding: 2px 5px; }
+  .res-icon { font-size: 14px; }
+  .res-tag  { display: none; }    /* ซ่อน label ทรัพยากร เหลือแค่ตัวเลข */
+  .res-num  { font-size: 12px; }
+  .res-divider { display: none; }
+  .btn-pixel { font-size: 9px; padding: 5px 7px; }
+
+  .hud-location { top: 4px; font-size: 8px; padding: 3px 8px; }
+
+  /* D-pad เล็กลง */
+  .touch-controls { bottom: 4px; }
+  .dpad {
+    grid-template-columns: repeat(3, 46px);
+    grid-template-rows: repeat(2, 46px);
+    gap: 3px;
+  }
+  .tbtn { width: 46px; height: 46px; font-size: 18px; }
+  .t-act { width: 54px; height: 54px; font-size: 24px; }
+
+  /* ปุ่ม sidebar เล็กลง */
+  .mobile-side-btn { width: 40px; height: 36px; font-size: 17px; }
+}
+
+/* ================================================================
+   RIGHT PANEL — ปรับ font ไม่ให้ล้น
+   ================================================================ */
+@media (max-width: 1100px) {
+  .right-panel {
+    width: clamp(220px, 25vw, 340px);
+  }
+  .board-analogy {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .cell-tag { font-size: 11px; }
+  .val-in, .val-out, .val-waste { font-size: 11px; }
+}
+
+/* ================================================================
+   MACHINE PANEL — modal บนมือถือ
+   ================================================================ */
+@media (max-width: 960px) {
+  .machine-panel {
+    width: 94vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 14px;
+    border-width: 3px;
+  }
+  .mp-head {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  #mp-icon { font-size: 22px; }
+  #mp-title { font-size: 13px; }
+  #mp-canvas { height: 190px; }
+  .mp-viz-head { gap: 8px; flex-wrap: wrap; }
+  .mp-viz-title { font-size: 11px; }
+  .mp-steps li { font-size: 11px; padding: 5px 8px; }
+  .mp-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mp-cell.full { grid-column: span 2; }
+  .mp-cell-label { font-size: 10px; }
+  .mp-cell-val { font-size: 11px; }
+  .mp-legend { gap: 6px; flex-wrap: wrap; }
+  .lg-item { font-size: 10px; }
+}
+@media (max-width: 640px) {
+  .machine-panel { padding: 10px; }
+  #mp-canvas { height: 150px; }
+  .mp-grid { grid-template-columns: 1fr; }
+  .mp-cell.full { grid-column: span 1; }
+}
+
+/* ================================================================
+   LIGHT MINIGAME — modal บนมือถือ
+   ================================================================ */
+@media (max-width: 960px) {
+  .lm-frame {
+    width: 94vw;
+    padding: 12px;
+  }
+  #lm-canvas { height: 220px; }
+  .lm-title { font-size: 12px; }
+  .lm-msg   { font-size: 11px; }
+  .lm-timer { font-size: 18px; }
+}
+@media (max-width: 640px) {
+  #lm-canvas { height: 170px; }
+}
+
+/* ================================================================
+   GAME OVER OVERLAY
+   ================================================================ */
+@media (max-width: 640px) {
+  .go-frame {
+    width: 90vw;
+    padding: 16px;
+    font-size: 12px;
+  }
+  .go-title { font-size: 14px; }
+  .go-desc  { font-size: 12px; }
+}
+
+/* ================================================================
+   TOUCH CONTROLS — ปรับ visual feedback บนมือถือ
+   ================================================================ */
+.tbtn {
+  /* active state ชัดขึ้น */
+  transition: transform 0.07s, background 0.07s, border-color 0.07s, box-shadow 0.07s;
+}
+.tbtn:active {
+  transform: scale(0.88) !important;
+  background: rgba(90, 215, 122, 0.55) !important;
+  border-color: #7affa0 !important;
+  box-shadow: inset 0 0 8px rgba(90, 215, 122, 0.5) !important;
+}
+
+/* ================================================================
+   EXTRA: ซ่อน hover effect บน touch device เพื่อความลื่น
+   ================================================================ */
+@media (hover: none) {
+  .res-box:hover,
+  .machine-card:hover,
+  .btn-pixel:hover:not(:disabled) {
+    transform: none;
+    filter: none;
+    box-shadow: inherit;
+  }
+  /* ปิด animation ดาวบน coarse device */
+  .star { animation: none; opacity: 0.7; }
+  /* ลด animation ควัน */
+  .pp-smoke { animation-duration: 4s; }
+}

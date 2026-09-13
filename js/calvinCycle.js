@@ -187,7 +187,7 @@ const CalvinCycle = {
       });
     }
     const zone = scene.add.zone(mx, my + 10, 160, 130).setInteractive({ useHandCursor: true });
-    zone.on('pointerdown', () => UI.openMachinePanel(lay.key));
+    zone.on('pointerdown', () => { if (window.TouchBlockedByUI) return; UI.openMachinePanel(lay.key); });
     this.machineObjs.push({
       key: lay.key, x: mx, y: my, mIdx, g, lamp, lampTween: null,
       windowAtoms, zone, nameText

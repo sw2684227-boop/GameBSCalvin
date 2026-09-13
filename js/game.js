@@ -7,13 +7,19 @@ const MainScene = new Phaser.Class({
     this.ringDecor = [];
   },
 
-  preload() { PixelAssets.generateAll(this); },
+  preload() { 
+    PixelAssets.generateAll(this); 
+  },
 
   create() {
     GameState.phaserScene = this;
     this._userZoom = 1;
     this.cameras.main.setBounds(0, 0, CONFIG.WORLD_WIDTH, CONFIG.WORLD_HEIGHT);
     this.cameras.main.setBackgroundColor(CONFIG.LOCATIONS.factory.bg);
+    
+    // ลดการ render เพื่อลดหน่วง
+    this.cameras.main.roundPixels = true;
+    
     this._setupScale();
     document.addEventListener('fullscreenchange', () => this._onResize());
     document.addEventListener('webkitfullscreenchange', () => this._onResize());
@@ -146,8 +152,13 @@ UI.updateInventory();
     if (locKey === 'sky') tileTexts = ['water_0','water_1','water_2','water_3'];
     if (locKey === 'sun') tileTexts = ['sun_ground_0','sun_ground_1','sun_ground_2'];
     if (locKey === 'water') tileTexts = ['water_0','water_1','water_2','water_3'];
-    for (let y = 0; y < rows; y++) {
-      for (let x = 0; x < cols; x++) {
+    
+    // ลด tiles บนมือถือเพื่อประหยัด performance
+    const isMobile = window.innerWidth <= 768;
+    const step = isMobile ? 2 : 1; // ข้าม tiles ทุกๆ 2 tiles บนมือถือ
+    
+    for (let y = 0; y < rows; y += step) {
+      for (let x = 0; x < cols; x += step) {
         const t = tileTexts[(x * 7 + y * 13) % tileTexts.length];
         const tile = this.add.image(x * s + s/2, y * s + s/2, t).setDepth(0);
         tile.alpha = 0.95;
@@ -611,8 +622,8 @@ UI.updateInventory();
     }).setOrigin(0.5).setDepth(11);
 
     const zone = this.add.zone(x, y + 14, width, height).setInteractive({ useHandCursor: true });
-    zone.on('pointerdown', () => UI.openMachinePanel('light'));
-    zone.on('pointerover', () => this.cameras.main.flash(70, 255, 231, 74));
+    zone.on('pointerdown', () => { if (window.TouchBlockedByUI) return; UI.openMachinePanel('light'); });
+    zone.on('pointerover', () => { if (window.TouchBlockedByUI) return; this.cameras.main.flash(70, 255, 231, 74); });
     this.locDecor.paths.push(g, label, status, zone);
     this.lightMachineZone = zone;
     this.lightMachineStatus = status;
@@ -651,7 +662,7 @@ UI.updateInventory();
     }
 
     const source = this.add.zone(cfg.x, cfg.y, cfg.radius * 2, cfg.radius * 1.6).setInteractive({ useHandCursor: true });
-    source.on('pointerdown', () => this._collectWaterFromPond());
+    source.on('pointerdown', () => { if (window.TouchBlockedByUI) return; this._collectWaterFromPond(); });
     this.locDecor.pickups.push(source);
     this.waterPondZone = source;
     this.waterPondGfx = g;
@@ -704,7 +715,7 @@ UI.updateInventory();
     this._updateCo2MachineBar();
     
     const zone = this.add.zone(cfg.x, cfg.y, 116, 88).setInteractive({ useHandCursor: true });
-    zone.on('pointerdown', () => this._collectCo2FromStation());
+    zone.on('pointerdown', () => { if (window.TouchBlockedByUI) return; this._collectCo2FromStation(); });
     const label = this.add.text(cfg.x, cfg.y - 72, '🌿 เครื่องดูด CO₂\nผลิต 1CO₂/วิ | SPACE รับ', {
       fontFamily: 'Press Start 2P, monospace', fontSize: '9px', color: '#c8eeff',
       stroke: '#0a1530', strokeThickness: 2, align: 'center'
