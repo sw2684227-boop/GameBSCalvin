@@ -35,13 +35,19 @@ UI.updateInventory();
     UI.setLocation('factory');
     UI.updatePowerBar();
     UI.updateCycleStats();
+    const autoTutorial = !hadSave && typeof Tutorial !== 'undefined' && typeof Tutorial.checkShouldAutoStart === 'function' && Tutorial.checkShouldAutoStart();
     this.time.delayedCall(900, () => {
       if (hadSave) {
         UI.showToast('💾 โหลดเกมเก่าสำเร็จ! (ไฟฟ้า ' + GameState.electricity.toFixed(0) + '%)');
-      } else {
+      } else if (!autoTutorial) {
         UI.showToast('🌿 WASD เดิน | ฟาร์ม CO₂ → ☀️ขั้นแสงอัตโนมัติ → 🌀คาลวิน | ⚡ไฟเริ่ม ' + CONFIG.ELECTRICITY.START + '%', 3400);
       }
     });
+    if (autoTutorial) {
+      this.time.delayedCall(260, () => {
+        if (typeof Tutorial !== 'undefined' && Tutorial.start) Tutorial.start();
+      });
+    }
 
     this._startElectricityLoop();
     if (typeof LightReaction !== 'undefined' && LightReaction.startProducer) {
@@ -56,6 +62,8 @@ UI.updateInventory();
       loop: true,
       callback: () => {
         if (GameState.isGameOver) return;
+        // ระหว่างฝึกสอน (cutscene/วิธีเล่น) ไฟฟ้าจะไม่ลดลง
+        if (GameState.tutorialActive || GameState.electricityPaused) return;
         GameState.electricity = Math.max(0, (GameState.electricity || 0) - CONFIG.ELECTRICITY.DRAIN_PER_SEC);
         UI.updatePowerBar();
         if (GameState.electricity <= 0) {

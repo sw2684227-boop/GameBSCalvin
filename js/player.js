@@ -74,6 +74,10 @@ const Player = {
   _tryInteract(scene) {
     if (this._interactCd && Date.now() - this._interactCd < 400) return;
     this._interactCd = Date.now();
+    // ระหว่างคัทซีนเต็มจอให้ล็อกปุ่มกดทั้งหมด
+    if (GameState.cutsceneActive || GameState.tutorialActive && document.getElementById('tutorial-overlay') && !document.getElementById('tutorial-overlay').classList.contains('hidden')) {
+      return;
+    }
     if (GameState.currentLocation === 'factory') {
       const pond = CONFIG.WATER_POND;
       const pondDistance = Phaser.Math.Distance.Between(this.sprite.x, this.sprite.y, pond.x, pond.y);

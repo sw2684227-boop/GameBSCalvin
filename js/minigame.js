@@ -53,6 +53,7 @@ const LightMiniGame = {
     this._nextSpawnT = this._lastT;
     this._spawnGap = this.SPAWN_START_MS;
     this.active = true;
+    GameState.playedLightMini = true;
 
     this._gaugeEl.style.width = '0%';
     this._msgEl.innerText = 'ขยับเมาส์/นิ้วให้อุปกรณ์จับโฟตอนที่ตกลงมา';

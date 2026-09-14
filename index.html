@@ -6,6 +6,7 @@
   <title>👷 วิศวกรไฟฟ้า: เกมสอนวัฏจักรคาลวิน 🌿</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/mobile-fix.css" />
+  <link rel="stylesheet" href="css/cutscene.css" />
 </head>
 <body>
 
@@ -13,6 +14,39 @@
   <div id="rotate-overlay">
     <div class="rotate-icon">📱↔️</div>
     <div class="rotate-text">กรุณาหมุนมือถือเป็นแนวนอน<br/>Please rotate to landscape</div>
+  </div>
+
+  <!-- Tutorial HUD (in-game objectives) -->
+  <div id="tutorial-hud" class="hidden">
+    <div class="tut-hud-frame">
+      <div class="tut-hud-head">
+        <span class="tut-hud-chip">🎓 ฝึกสอน</span>
+        <span id="tut-hud-step" class="tut-hud-step">ขั้น 1/21 · กำลังฝึก</span>
+      </div>
+      <div id="tut-hud-title" class="tut-hud-title">ภารกิจ</div>
+      <div id="tut-hud-desc" class="tut-hud-desc">...</div>
+      <div class="tut-hud-actions">
+        <button id="tut-hud-skip" class="tut-btn tut-btn-skip">⏭ ข้ามฝึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial cutscene overlay -->
+  <div id="tutorial-overlay" class="hidden">
+    <div class="tut-stage">
+      <div class="tut-scanline"></div>
+      <div class="tut-vignette"></div>
+      <div id="tut-art" class="tut-art"></div>
+      <div id="tut-progress" class="tut-progress"></div>
+      <div class="tut-content">
+        <div id="tut-speaker" class="tut-speaker">ผู้เล่าเรื่อง</div>
+        <div id="tut-text" class="tut-text"></div>
+        <div class="tut-controls">
+          <button id="tut-next" class="tut-btn tut-btn-main">ต่อไป ▶</button>
+          <button id="tut-skip" class="tut-btn tut-btn-skip">⏭ ข้ามฉาก</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Game Over overlay -->
@@ -93,6 +127,7 @@
             <button class="btn-pixel btn-zoom" onclick="GameView.zoomOut()" title="ซูมออก">－</button>
           </div>
         </div>
+        <button class="btn-pixel btn-help"   onclick="Tutorial.start()" title="เรื่องราว / วิธีเล่น">📖</button>
         <button class="btn-pixel btn-full"    onclick="UI.toggleFullscreen()">⛶</button>
         <button class="btn-pixel btn-reset"   onclick="UI.resetGame()">⚙</button>
       </div>
@@ -451,6 +486,7 @@
   <script src="js/minigame.js"></script>
   <script src="js/player.js"></script>
   <script src="js/touchControls.js"></script>
+  <script src="js/tutorial.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

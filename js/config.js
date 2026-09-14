@@ -288,6 +288,17 @@ const GameState = {
   electricity: CONFIG.ELECTRICITY.START,
   isGameOver: false,
 
+  // ระบบฝึกสอนครั้งแรก — ระหว่างฝึกสอน ไฟฟ้าจะไม่ลด
+  tutorialActive: false,
+  tutorialDone: false,
+  cutsceneActive: false,
+
+  // ติดตามการปั่นไฟของกระต่ายล่าสุด (ใช้กับระบบฝึกสอน)
+  lastFeedAt: 0,
+
+  // 猄่ามินิเกมแสง (ใช้ในระบบฝึกสอน)
+  playedLightMini: false,
+
   rabbit: {
     isRunning: false,
     wheelProgress: 0

@@ -265,6 +265,7 @@ const UI = {
     }
     GameState.res.SUGAR -= CONFIG.RABBIT.SUGAR_PER_RUN;
     GameState.rabbit.isRunning = true;
+    GameState.lastFeedAt = Date.now();
     const wheel = document.getElementById('rabbit-wheel');
     const sprite = document.getElementById('rabbit-sprite');
     const statusEl = document.getElementById('rabbit-status');
