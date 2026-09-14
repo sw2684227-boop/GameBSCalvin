@@ -46,19 +46,21 @@ const CalvinCycle = {
     this._drawConveyorRing(scene, cx, cy, R - 40);
     this._drawReturnRing(scene, cx, cy, R + 50);
     this.cycleDuration = CONFIG.CALVIN_CYCLE_MS;
+    const lr = (typeof LightReaction !== 'undefined' && LightReaction) ? LightReaction : { GAIN_ATP: 2, GAIN_NADPH: 2, BOOST_GAIN_ATP: 4 };
     UI.updateChalkboard(
       'LIGHT: READY',
       '🌊 นำน้ำ H₂O ไปใส่กล่องของเครื่องขั้นแสงเพื่อผลิต ATP + NADPH',
       'บ่อน้ำ → กล่องน้ำเครื่อง Light Reaction → ATP + NADPH → คาลวิน',
       'เติมน้ำลงกล่องเครื่องขั้นแสง',
-      'ATP +1 + NADPH +1 (มีแสง = ×4)',
+      `ATP +${lr.GAIN_ATP} + NADPH +${lr.GAIN_NADPH} (มีแสง = ×${lr.BOOST_GAIN_ATP / lr.GAIN_ATP})`,
       'O₂ ปล่อยออกสู่บรรยากาศ'
     );
     UI.setActionButton('▶ เริ่มวัฏจักรคาลวิน (' + (this.cycleDuration / 1000).toFixed(1) + ' วิ/รอบ)', true, () => this.startCycle());
   },
 
   _drawConveyorRing(scene, cx, cy, R) {
-    const pts = 72;
+    const isMobile = (typeof window !== 'undefined' && window.innerWidth) <= 768;
+    const pts = isMobile ? 40 : 72;
     const tileSprites = [];
     for (let i = 0; i < pts; i++) {
       const ang = (i / pts) * Math.PI * 2;
@@ -86,7 +88,8 @@ const CalvinCycle = {
   },
 
   _drawReturnRing(scene, cx, cy, R) {
-    const pts = 56;
+    const isMobile = (typeof window !== 'undefined' && window.innerWidth) <= 768;
+    const pts = isMobile ? 36 : 56;
     for (let i = 0; i < pts; i++) {
       const ang = (i / pts) * Math.PI * 2;
       const px = cx + Math.cos(ang) * R;
@@ -151,16 +154,16 @@ const CalvinCycle = {
     g.fillStyle(this._shade(col, 40), 1);
     g.fillRect(mx - 74, my - 4, 148, 28);
     const nameText = scene.add.text(mx, my - 78, lay.label, {
-      fontFamily: 'Press Start 2P, VT323, monospace', fontSize: '11px', color: lay.col,
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: lay.col,
       stroke: '#1a0f05', strokeThickness: 3
     }).setOrigin(0.5).setDepth(11);
     const subText = scene.add.text(mx, my + 46, lay.sub, {
-      fontFamily: 'Press Start 2P, VT323, monospace', fontSize: '7px', color: '#ffd75e',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#ffd75e',
       stroke: '#1a0f05', strokeThickness: 2
     }).setOrigin(0.5).setDepth(11);
     const inputDesc = lay.inputs.map(inp => `${inp.icon} ×${inp.n}`).join('  +  ');
     const inputText = scene.add.text(mx, my + 56, inputDesc, {
-      fontFamily: 'Press Start 2P, VT323, monospace', fontSize: '7px', color: '#ffffff',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#ffffff',
       stroke: '#1a0f05', strokeThickness: 2
     }).setOrigin(0.5).setDepth(11);
     lay.inputs.forEach((inp, k) => {
@@ -171,7 +174,7 @@ const CalvinCycle = {
       g.fillRect(hx - 8, my - 68, 16, 6);
       const dot = scene.add.circle(hx, my - 64, 5, Phaser.Display.Color.HexStringToColor(inp.color).color, 1).setDepth(10);
       const cnt = scene.add.text(hx, my - 56, `${inp.n}`, {
-        fontFamily: 'Press Start 2P, monospace', fontSize: '7px', color: '#ffd75e',
+        fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#ffd75e',
         stroke: '#1a0f05', strokeThickness: 1
       }).setOrigin(0.5).setDepth(11);
     });
@@ -215,13 +218,13 @@ const CalvinCycle = {
       const ic = scene.add.image(px, py - 2, it.key).setDepth(9).setScale(1.1);
       scene.tweens.add({ targets: ic, y: py - 6, duration: 800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       const t = scene.add.text(px, py + 26, it.label, {
-        fontFamily: 'Press Start 2P, VT323, monospace', fontSize: '7px', color: '#ffd75e',
+        fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#ffd75e',
         stroke: '#1a0f05', strokeThickness: 2
       }).setOrigin(0.5).setDepth(9);
       this.dockItems.push({ ic, t, x: px, y: py, key: it.key });
     });
     const note = scene.add.text(cx, cy + 100, '☀️ เติมน้ำให้เครื่องขั้นแสง แล้วเดินมากด SPACE เพื่อเริ่มคาลวิน', {
-      fontFamily: 'Press Start 2P, VT323, monospace', fontSize: '8px', color: '#ffd75e',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '12px', color: '#ffd75e',
       stroke: '#1a0f05', strokeThickness: 2
     }).setOrigin(0.5).setDepth(9);
     scene.tweens.add({ targets: note, alpha: { from: 0.5, to: 1 }, duration: 700, yoyo: true, repeat: -1 });
@@ -572,7 +575,7 @@ const CalvinCycle = {
               moved.splice(0, 1);
 
               if (GameState.res.G3P >= 2) {
-                this._assembleGlucose();
+                this._assembleSugar();
               }
 
               GameState.totalCycles += 1;
@@ -609,7 +612,7 @@ const CalvinCycle = {
     });
   },
 
-  _assembleGlucose() {
+  _assembleSugar() {
     const scene = GameState.phaserScene;
     const fx = CONFIG.CYCLE_CENTER.x;
     const fy = CONFIG.CYCLE_CENTER.y + 140;
@@ -621,12 +624,12 @@ const CalvinCycle = {
       duration: 1400, ease: 'Back.easeOut',
       onComplete: () => {
         GameState.res.G3P = 0;
-        GameState.res.GLUCOSE += 1;
+        GameState.res.SUGAR = Math.min(CONFIG.RESOURCES.SUGAR.max, (GameState.res.SUGAR || 0) + 1);
         GameState.totalGlucose += 1;
         UI.updateInventory();
         UI.updateCycleStats();
         scene.cameras.main.flash(500, 255, 255, 180);
-        UI.showToast('🎉 ประกอบกลูโคส (น้ำตาล) เสร็จ! +1 🍬', 2000);
+        UI.showToast('🐰 ประกอบน้ำตาลเสร็จ! +1 🥕 เอาไปให้กระต่ายได้เลย', 2200);
         GameState.save();
         scene.time.delayedCall(2400, () => {
           scene.tweens.add({ targets: robot, alpha: 0, scale: 0.3, y: fy - 80, duration: 1000, onComplete: () => robot.destroy() });

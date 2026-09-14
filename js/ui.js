@@ -29,7 +29,6 @@ const UI = {
     const maxC = CONFIG.RESOURCES.CO2.max;
     const maxA = CONFIG.RESOURCES.ATP.max;
     const maxN = CONFIG.RESOURCES.NADPH.max;
-    const maxG = CONFIG.RESOURCES.GLUCOSE.max;
     const maxS = CONFIG.RESOURCES.SUGAR.max;
     document.getElementById('stat-c').innerText = `${r.CO2 || 0}`;
     const elW = document.getElementById('stat-water');
@@ -40,8 +39,7 @@ const UI = {
     document.getElementById('stat-nadph').innerText = `${r.NADPH || 0}`;
     const statSugar = document.getElementById('stat-sugar');
     if (statSugar) statSugar.innerText = `${r.SUGAR || 0}`;
-    const statGlucose = document.getElementById('stat-glucose');
-    if (statGlucose) statGlucose.innerText = `${r.GLUCOSE || 0}`;
+    this.syncAutoButton();
     this.updateButtonsEnabled();
   },
 
@@ -113,7 +111,7 @@ const UI = {
 
   resetGame(force = false) {
     if (!force && !confirm('ต้องการเริ่มเกมใหม่ทั้งหมดหรือไม่?')) return;
-    GameState.res = { CO2: 0, WATER: 0, LIGHT: 0, ATP: 0, NADPH: 0, GLUCOSE: 0, G3P: 0, SUGAR: 0 };
+    GameState.res = { CO2: 0, WATER: 0, LIGHT: 0, ATP: 0, NADPH: 0, G3P: 0, SUGAR: 0 };
     GameState.isCycleRunning = false;
     GameState.cycleStage = -1;
     GameState.pendingAction = null;
@@ -218,7 +216,7 @@ const UI = {
 
   updateCycleStats() {
     const cEl = document.getElementById('stat-cycles');
-    const gEl = document.getElementById('stat-total-glucose');
+    const gEl = document.getElementById('stat-total-sugar');
     if (cEl) cEl.innerText = GameState.totalCycles || 0;
     if (gEl) gEl.innerText = GameState.totalGlucose || 0;
   },
@@ -230,15 +228,27 @@ const UI = {
     else btn.classList.add('hidden');
   },
 
+  syncAutoButton() {
+    const btn = document.getElementById('auto-toggle-btn');
+    if (!btn) return;
+    btn.classList.remove('hidden');
+    btn.innerText = GameState.autoCycle ? '🔁 คาลวิน AUTO: ON (กดหยุด)' : '🔁 คาลวิน AUTO: OFF';
+  },
+
   toggleAutoCycle() {
     GameState.autoCycle = !GameState.autoCycle;
     const btn = document.getElementById('auto-toggle-btn');
-    if (btn) btn.innerText = GameState.autoCycle ? '🔁 AUTO: ON (หยุด)' : '🔁 AUTO: OFF';
+    if (btn) btn.innerText = GameState.autoCycle ? '🔁 คาลวิน AUTO: ON (กดหยุด)' : '🔁 คาลวิน AUTO: OFF';
     if (GameState.autoCycle && !GameState.isCycleRunning) {
       if (CalvinCycle && CalvinCycle.canStart && CalvinCycle.startCycle) {
-        if (CalvinCycle.canStart()) CalvinCycle.startCycle();
-        else this.showToast('⚠️ AUTO ON แต่วัตถุดิบยังไม่พอ → ฟาร์มทีละนิด!', 1800);
+        if (CalvinCycle.canStart()) {
+          CalvinCycle.startCycle();
+        } else {
+          this.showToast('⚠️ คาลวิน AUTO: วัตถุดิบไม่พอ (CO2 ≥3, ATP ≥9, NADPH ≥6) → ฟาร์ม CO₂ ก่อน!', 2400);
+        }
       }
+    } else if (GameState.autoCycle && GameState.isCycleRunning) {
+      this.showToast('🌀 คาลวิน AUTO: ON — รอบนี้จบแล้วจะเริ่มอัตโนมัติต่อ', 1800);
     }
     GameState.save();
   },
@@ -250,7 +260,7 @@ const UI = {
       return;
     }
     if ((GameState.res.SUGAR || 0) < CONFIG.RABBIT.SUGAR_PER_RUN) {
-      this.showToast('⚠️ น้ำตาลไม่พอ! กด 🍬→🥕 แปลงกลูโคสเป็นน้ำตาลก่อน', 1800);
+      this.showToast('⚠️ น้ำตาลไม่พอ! ผลิตน้ำตาลจากวัฏจักรคาลวินก่อน (2 รอบ = 1 น้ำตาล)', 1800);
       return;
     }
     GameState.res.SUGAR -= CONFIG.RABBIT.SUGAR_PER_RUN;
@@ -273,18 +283,6 @@ const UI = {
       if (sprite) sprite.classList.remove('running');
       if (statusEl) statusEl.innerText = '😴 กำลังหลับ';
     }, CONFIG.RABBIT.RUN_DURATION);
-  },
-
-  convertGlucoseToSugar() {
-    if ((GameState.res.GLUCOSE || 0) < CONFIG.RABBIT.GLUCOSE_TO_SUGAR) {
-      this.showToast('⚠️ กลูโคสไม่พอ! (ผลิตจากวัฏจักรคาลวิน 2 รอบ = 1 กลูโคส)', 1800);
-      return;
-    }
-    GameState.res.GLUCOSE -= CONFIG.RABBIT.GLUCOSE_TO_SUGAR;
-    GameState.res.SUGAR = Math.min(CONFIG.RESOURCES.SUGAR.max, (GameState.res.SUGAR || 0) + 1);
-    GameState.save();
-    this.updateInventory();
-    this.showToast('🍬→🥕 แปลงสำเร็จ! น้ำตาลกระต่าย +1', 1500);
   },
 
   updatePowerBar() {
@@ -362,13 +360,9 @@ const UI = {
 
   updateButtonsEnabled() {
     const feed = document.getElementById('btn-feed');
-    const conv = document.getElementById('btn-convert');
     if (feed) {
       const canFeed = (GameState.res.SUGAR || 0) >= CONFIG.RABBIT.SUGAR_PER_RUN && !GameState.rabbit.isRunning;
       feed.disabled = !canFeed;
-    }
-    if (conv) {
-      conv.disabled = (GameState.res.GLUCOSE || 0) < CONFIG.RABBIT.GLUCOSE_TO_SUGAR;
     }
   },
 
@@ -378,12 +372,12 @@ const UI = {
       GameState.isGameOver = true;
       GameState.autoCycle = false;
       const goCycles = document.getElementById('go-cycles');
-      const goGlucose = document.getElementById('go-glucose');
+      const goSugar = document.getElementById('go-sugar');
       if (goCycles) goCycles.innerText = GameState.totalCycles || 0;
-      if (goGlucose) goGlucose.innerText = GameState.totalGlucose || 0;
+      if (goSugar) goSugar.innerText = GameState.totalGlucose || 0;
       const autoBtn = document.getElementById('auto-toggle-btn');
       if (autoBtn) {
-        autoBtn.innerText = '🔁 AUTO: OFF';
+        autoBtn.innerText = '🔁 คาลวิน AUTO: OFF';
         autoBtn.classList.add('hidden');
       }
       document.getElementById('game-over-overlay').classList.remove('hidden');

@@ -9,8 +9,8 @@ const LightReaction = {
   BOOST_TICK_MS: 1000,
   WATER_PER_TICK: 1,
   WATER_TANK_CAPACITY: 20,
-  GAIN_ATP: 1,
-  GAIN_NADPH: 1,
+  GAIN_ATP: 2,
+  GAIN_NADPH: 2,
   BOOST_GAIN_ATP: 4,
   BOOST_GAIN_NADPH: 4,
 
@@ -24,7 +24,7 @@ const LightReaction = {
         '🌊 นำน้ำ H₂O ไปใส่กล่องน้ำของเครื่องขั้นแสง',
         'บ่อน้ำ → กล่องน้ำเครื่อง Light Reaction → ATP + NADPH → คาลวิน',
         'H₂O ในกล่อง 0/' + this.WATER_TANK_CAPACITY,
-        'ATP +1 + NADPH +1 (มีแสง = ×4)',
+        `ATP +${this.GAIN_ATP} + NADPH +${this.GAIN_NADPH} (มีแสง = ×${this.BOOST_GAIN_ATP / this.GAIN_ATP})`,
         'O₂ ปล่อยออกสู่บรรยากาศ'
       );
     }
@@ -106,7 +106,7 @@ const LightReaction = {
       const cy = cfg.y - 12;
       const boostTag = boosted ? '  ⚡เร็ว' : '';
       const tx = scene.add.text(cx, cy - 24, `+${gainAtP} ⚡ATP  +${gainNadph} 💧NADPH${boostTag}`, {
-        fontFamily: 'Press Start 2P, monospace', fontSize: boosted ? '13px' : '11px', color: boosted ? '#ffee8a' : '#d0ffb0',
+        fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: boosted ? '13px' : '11px', color: boosted ? '#ffee8a' : '#d0ffb0',
         stroke: '#12240f', strokeThickness: 3
       }).setOrigin(0.5).setDepth(200);
       scene.tweens.add({
@@ -115,7 +115,7 @@ const LightReaction = {
       });
       for (let b = 0; b < (boosted ? 3 : 2); b++) {
         const bub = scene.add.text(cx + (Math.random() - 0.5) * 60, cy - 6, 'O₂', {
-          fontFamily: 'Press Start 2P, monospace', fontSize: '9px', color: '#ff8a8a',
+          fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#ff8a8a',
           stroke: '#1a0f05', strokeThickness: 2
         }).setDepth(200);
         scene.tweens.add({
@@ -123,7 +123,7 @@ const LightReaction = {
           duration: 700 + b * 80, ease: 'Cubic.easeOut', onComplete: () => bub.destroy()
         });
       }
-      scene.cameras.main.flash(140, boosted ? 255 : 255, 231, 74);
+      // ไม่ flash จอบนี้ — ใช้ flash ตอนหยิบ/เก็บของแทน (player.js)
     } catch (err) {
       if (console && console.error) console.error('[LightReaction] tick error:', err);
     } finally {
@@ -141,7 +141,7 @@ const LightReaction = {
         this.isRunning ? 'เครื่องกำลังใช้น้ำจากกล่องเพื่อผลิต ATP + NADPH' : 'เติมน้ำลงกล่องของเครื่องขั้นแสงเพื่อเริ่มทำงาน',
         'บ่อน้ำ → กล่องน้ำเครื่อง Light Reaction → ATP + NADPH → คาลวิน',
         `H₂O ในกล่อง ${this._waterTank}/${this.WATER_TANK_CAPACITY}`,
-        'ATP +1 + NADPH +1 ต่อ H₂O 1 หน่วย',
+        `ATP +${this.GAIN_ATP} + NADPH +${this.GAIN_NADPH} ต่อ H₂O 1 หน่วย`,
         this.isRunning ? 'กล่องน้ำลดลงทุก 1 วินาที' : 'น้ำหมด — เครื่องหยุดทำงาน'
       );
     }

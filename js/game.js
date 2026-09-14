@@ -16,10 +16,6 @@ const MainScene = new Phaser.Class({
     this._userZoom = 1;
     this.cameras.main.setBounds(0, 0, CONFIG.WORLD_WIDTH, CONFIG.WORLD_HEIGHT);
     this.cameras.main.setBackgroundColor(CONFIG.LOCATIONS.factory.bg);
-    
-    // ลดการ render เพื่อลดหน่วง
-    this.cameras.main.roundPixels = true;
-    
     this._setupScale();
     document.addEventListener('fullscreenchange', () => this._onResize());
     document.addEventListener('webkitfullscreenchange', () => this._onResize());
@@ -70,7 +66,11 @@ UI.updateInventory();
   },
 
   _setupScale() {
-    if (this.scale) this.scale.refresh();
+    if (this.scale) {
+      // อัปเดต resolution ตาม DPR ปัจจุบัน กันภาพเบอบนมือถือ (ต้องตั้งก่อน refresh)
+      this.scale.resolution = Math.min(window.devicePixelRatio || 1, 2);
+      this.scale.refresh();
+    }
     const cam = this.cameras.main;
     cam.setBounds(0, 0, CONFIG.WORLD_WIDTH, CONFIG.WORLD_HEIGHT);
     const zoom = Math.max(
@@ -133,42 +133,20 @@ UI.updateInventory();
   },
 
   _drawGroundTiles(locKey) {
-    const s = CONFIG.TILE_SIZE;
-    const cols = Math.ceil(CONFIG.WORLD_WIDTH / s);
-    const rows = Math.ceil(CONFIG.WORLD_HEIGHT / s);
-    const bgGfx = this.add.graphics();
-    bgGfx._bgTile = true;
-    bgGfx.setDepth(0);
-    const loc = CONFIG.LOCATIONS[locKey];
-    const bgColor = loc.bg;
-    const altBg = Phaser.Display.Color.IntegerToColor(bgColor);
-    altBg.lighten(10);
-    const alt = Phaser.Display.Color.GetColor(altBg.r, altBg.g, altBg.b);
-    const darkBg = Phaser.Display.Color.IntegerToColor(bgColor);
-    darkBg.darken(10);
-    const dark = Phaser.Display.Color.GetColor(darkBg.r, darkBg.g, darkBg.b);
-    let tileTexts = [];
-    if (locKey === 'factory') tileTexts = ['grass_0','grass_1','grass_2','grass_3'];
-    if (locKey === 'sky') tileTexts = ['water_0','water_1','water_2','water_3'];
-    if (locKey === 'sun') tileTexts = ['sun_ground_0','sun_ground_1','sun_ground_2'];
-    if (locKey === 'water') tileTexts = ['water_0','water_1','water_2','water_3'];
-    
-    // ลด tiles บนมือถือเพื่อประหยัด performance
-    const isMobile = window.innerWidth <= 768;
-    const step = isMobile ? 2 : 1; // ข้าม tiles ทุกๆ 2 tiles บนมือถือ
-    
-    for (let y = 0; y < rows; y += step) {
-      for (let x = 0; x < cols; x += step) {
-        const t = tileTexts[(x * 7 + y * 13) % tileTexts.length];
-        const tile = this.add.image(x * s + s/2, y * s + s/2, t).setDepth(0);
-        tile.alpha = 0.95;
-        this.locDecor.paths.push(tile);
-      }
-    }
+    const W = CONFIG.WORLD_WIDTH, H = CONFIG.WORLD_HEIGHT;
+    // พื้นการ์ตูน seamless ภาพเดียวซ้ำทั้งฉาก (กันรอยต่อ/บั๊กตาหมากรุก
+    // และช่วย performance ด้วย draw call 1 ครั้งแทนตาราง tile หลายร้อยภาพ)
+    const tex = locKey === 'factory' ? 'ground_factory'
+      : locKey === 'sun' ? 'ground_sun'
+      : locKey === 'water' ? 'ground_water'
+      : 'ground_sky';
+    const ground = this.add.tileSprite(W / 2, H / 2, W, H, tex).setDepth(0);
+    this.locDecor.paths.push(ground);
+
     const border = this.add.graphics();
     border.setDepth(1);
-    border.lineStyle(8, dark, 1);
-    border.strokeRect(4, 4, CONFIG.WORLD_WIDTH - 8, CONFIG.WORLD_HEIGHT - 8);
+    border.lineStyle(8, 0x0a1a0a, 0.85);
+    border.strokeRect(4, 4, W - 8, H - 8);
     this.locDecor.paths.push(border);
   },
 
@@ -239,7 +217,7 @@ UI.updateInventory();
     const sign = this.add.image(246, 373, 'sign').setDepth(25).setScale(1.05);
     this.locDecor.signs.push(sign);
     const signText = this.add.text(246, 348, 'GREEN LEAF\nBIO FACTORY', {
-      fontFamily: 'Press Start 2P, monospace', fontSize: '8px', color: '#ffd75e',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '12px', color: '#ffd75e',
       align: 'center', stroke: '#1a0f05', strokeThickness: 2
     }).setOrigin(0.5).setDepth(26);
     this.locDecor.signs.push(signText);
@@ -296,7 +274,7 @@ UI.updateInventory();
     this.locDecor.paths.push(factory);
 
     const title = this.add.text(cx, cy - 340, '⚡ GREEN LEAF BIO POWER 🏭', {
-      fontFamily: 'Press Start 2P, monospace', fontSize: '11px', color: '#ffd66a',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#ffd66a',
       stroke: '#0a1014', strokeThickness: 4
     }).setOrigin(0.5).setDepth(12);
     this.locDecor.signs.push(title);
@@ -362,7 +340,7 @@ UI.updateInventory();
     }
     this.locDecor.factories.push(bigPond, stone, reeds, ft);
     const pondLabel = this.add.text(px, py + 132, '💧 BIG POND + FOUNTAIN', {
-      fontFamily: 'Press Start 2P, monospace', fontSize: '8px', color: '#9ae8ff',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '12px', color: '#9ae8ff',
       stroke: '#0a1420', strokeThickness: 3
     }).setOrigin(0.5).setDepth(8);
     this.locDecor.signs.push(pondLabel);
@@ -428,7 +406,7 @@ UI.updateInventory();
       this.locDecor.factories.push(f);
       this.locDecor.factories.push(gh);
       const sign = this.add.text(hx, hy + 120, h.label, {
-        fontFamily: 'Press Start 2P, monospace', fontSize: '8px', color: '#ffe8a0',
+        fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '12px', color: '#ffe8a0',
         stroke: '#1a1008', strokeThickness: 3
       }).setOrigin(0.5).setDepth(8);
       this.locDecor.signs.push(sign);
@@ -511,7 +489,7 @@ UI.updateInventory();
       npcBubble.strokeRoundedRect(-70, -50, 140, 46, 10);
       npcBubble.fillTriangle(-10, -6, 6, -6, -2, 12);
       const npcText = this.add.text(0, -27, '', {
-        fontFamily: 'Prompt, sans-serif', fontSize: '11px', color: '#111133', align: 'center', wordWrap: { width: 128 }
+        fontFamily: 'Prompt, sans-serif', fontSize: '15px', color: '#111133', align: 'center', wordWrap: { width: 128 }
       }).setOrigin(0.5).setDepth(15).setVisible(false);
       const npcBody = this.add.graphics().setDepth(9);
       npcBody.fillStyle(0x1a1a1a, 0.34);
@@ -521,7 +499,7 @@ UI.updateInventory();
       npcBody.lineStyle(3, 0x202020, 1);
       npcBody.strokeRoundedRect(-14, -14, 28, 34, 8);
       const npcLabel = this.add.text(0, 36, n.name, {
-        fontFamily: 'Prompt, sans-serif', fontSize: '10px', color: '#fff', stroke: '#111', strokeThickness: 3, align: 'center'
+        fontFamily: 'Prompt, sans-serif', fontSize: '12px', color: '#fff', stroke: '#111', strokeThickness: 3, align: 'center'
       }).setOrigin(0.5).setDepth(10);
       const npcEmoji = this.add.text(0, -26, n.emoji, { fontSize: '22px' }).setOrigin(0.5).setDepth(11);
       const npc = this.add.container(baseX, baseY, [npcBody, npcLabel, npcEmoji, npcBubble, npcText]).setSize(32, 60);
@@ -617,7 +595,7 @@ UI.updateInventory();
     });
 
     const label = this.add.text(x, y - height / 2 - 20, cfg.label, {
-      fontFamily: 'Press Start 2P, VT323, monospace', fontSize: '10px', color: '#ffe78a',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '12px', color: '#ffe78a',
       align: 'center', stroke: '#1a0f05', strokeThickness: 3
     }).setOrigin(0.5).setDepth(11);
 
@@ -628,7 +606,7 @@ UI.updateInventory();
     this.lightMachineZone = zone;
     this.lightMachineStatus = status;
     this.lightMachineTankLabel = this.add.text(tankX + tankW / 2, y + tankH + 34, '📦 น้ำในกล่อง 0/20', {
-      fontFamily: 'Press Start 2P, monospace', fontSize: '8px', color: '#aadcff',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '12px', color: '#aadcff',
       stroke: '#0a1530', strokeThickness: 2, align: 'center'
     }).setOrigin(0.5).setDepth(12);
     this.locDecor.signs.push(this.lightMachineTankLabel);
@@ -668,7 +646,7 @@ UI.updateInventory();
     this.waterPondGfx = g;
 
     const hint = this.add.text(cfg.x, cfg.y - cfg.radius - 28, '🌊 บ่อน้ำ H₂O\nกด SPACE หรือแตะตักน้ำ', {
-      fontFamily: 'Press Start 2P, monospace', fontSize: '9px', color: '#aadcff',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#aadcff',
       stroke: '#0a1530', strokeThickness: 2, align: 'center'
     }).setOrigin(0.5).setDepth(15);
     this.locDecor.signs.push(hint);
@@ -682,7 +660,7 @@ UI.updateInventory();
       UI.showToast('💡 เดินไปที่บ่อน้ำก่อน แล้วกด SPACE เพื่อตักน้ำ', 1500);
       return;
     }
-    const amt = 1;
+    const amt = 2;
     const cap = CONFIG.RESOURCES.WATER.max || 999;
     GameState.res.WATER = Math.min(cap, (GameState.res.WATER || 0) + amt);
     this.cameras.main.flash(120, 120, 220, 255);
@@ -692,7 +670,7 @@ UI.updateInventory();
     });
     UI.updateInventory();
     GameState.save();
-    UI.showToast('✨ ตัก H₂O +1 → เอาไปใส่เครื่องขั้นแสง', 1300);
+    UI.showToast(`✨ ตัก H₂O +${amt} → เอาไปใส่เครื่องขั้นแสง`, 1300);
   },
 
   _buildCo2Collector() {
@@ -717,7 +695,7 @@ UI.updateInventory();
     const zone = this.add.zone(cfg.x, cfg.y, 116, 88).setInteractive({ useHandCursor: true });
     zone.on('pointerdown', () => { if (window.TouchBlockedByUI) return; this._collectCo2FromStation(); });
     const label = this.add.text(cfg.x, cfg.y - 72, '🌿 เครื่องดูด CO₂\nผลิต 1CO₂/วิ | SPACE รับ', {
-      fontFamily: 'Press Start 2P, monospace', fontSize: '9px', color: '#c8eeff',
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#c8eeff',
       stroke: '#0a1530', strokeThickness: 2, align: 'center'
     }).setOrigin(0.5).setDepth(15);
     
@@ -752,12 +730,14 @@ UI.updateInventory();
       this._co2MachineBar.fillRoundedRect(cfg.x - 47, cfg.y + 33, fillWidth, 6, 3);
     }
     
-    // ข้อความจำนวน
-    if (this._co2MachineText) this._co2MachineText.destroy();
-    this._co2MachineText = this.add.text(cfg.x, cfg.y + 50, `CO₂: ${this._co2MachineAmount}`, {
-      fontFamily: 'Press Start 2P, monospace', fontSize: '8px', color: '#c8eeff',
-      stroke: '#0a1530', strokeThickness: 2
-    }).setOrigin(0.5).setDepth(16);
+    // ข้อความจำนวน (reuse ตัวเดิม ไม่สร้างใหม่ทุกวินาที เพื่อลด lag)
+    if (!this._co2MachineText) {
+      this._co2MachineText = this.add.text(cfg.x, cfg.y + 50, '', {
+        fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '12px', color: '#c8eeff',
+        stroke: '#0a1530', strokeThickness: 2
+      }).setOrigin(0.5).setDepth(16);
+    }
+    this._co2MachineText.setText(`CO₂: ${this._co2MachineAmount}`);
   },
 
   _collectCo2FromStation() {
@@ -787,7 +767,9 @@ UI.updateInventory();
     const blocked = [];
     const isWater = (locKey === 'water');
     const isSky = (locKey === 'sky');
-    const count = (locKey === 'factory') ? 28 : (isSky ? 4 : (isWater ? 8 : 10));
+    const isMobile = window.innerWidth <= 768;
+    let count = (locKey === 'factory') ? 28 : (isSky ? 4 : (isWater ? 8 : 10));
+    if (isMobile) count = Math.max(6, Math.floor(count / 2));
     const positions = [];
     for (let t = 0; t < count; t++) {
       let x, y, ok = false, tries = 0;
@@ -862,9 +844,13 @@ const phaserConfig = {
     width: CONFIG.WORLD_WIDTH,
     height: CONFIG.WORLD_HEIGHT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    resizeInterval: 16
+    resizeInterval: 16,
+    // เรนเดอร์ที่ความละเอียดจริงของจอ (DPR) เพื่อกันภาพเบอบนมือถือ retina
+    resolution: Math.min(window.devicePixelRatio || 1, 2),
+    autoRound: true
   },
   backgroundColor: '#1a2e1a',
+  powerPreference: 'high-performance',
   pixelArt: false,
   roundPixels: false,
   scene: [MainScene]

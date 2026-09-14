@@ -23,7 +23,7 @@
         <b style="color:#ff8888">ชาวบ้านทั้ง 4 ครอบครัวรวมกันด่า:</b><br/>
         <span style="color:#ffe08a">"ไอ้<b style="color:#ffffff">วิศวกร</b>! ไฟดับหมดหมดเลย! <br/>ทำไมปล่อยให้กระต่ายนอนหลับ! <br/>แกไม่เหมาะกับงานนี้เลย! พลัดตำแหน่ง!"</span><br/><br/>
         วัฏจักรคาลวินทั้งหมด: <b id="go-cycles">0</b> รอบ<br/>
-        ผลิตกลูโคสทั้งหมด: <b id="go-glucose">0</b> ห่อ
+        ผลิตน้ำตาลทั้งหมด: <b id="go-sugar">0</b> ชิ้น
       </div>
       <button class="btn-pixel btn-reset" onclick="UI.resetGame(true)">🔄 กลับไปผลิตไฟใหม่!</button>
     </div>
@@ -76,14 +76,7 @@
           </div>
         </div>
         <div class="res-divider"></div>
-        <div class="res-box res-glucose" title="กลูโคส – แปลงเป็นน้ำตาลให้กระต่าย">
-          <span class="res-icon">🍬</span>
-          <div class="res-detail">
-            <span class="res-tag">กลูโคส</span>
-            <span id="stat-glucose" class="res-num">0</span>
-          </div>
-        </div>
-        <div class="res-box res-sugar" title="น้ำตาลกระต่าย – กดให้กิน">
+        <div class="res-box res-sugar" title="น้ำตาล – ผลิตจากวัฏจักรคาลวิน ให้กระต่ายกินเพื่อปั่นไฟ">
           <span class="res-icon">🥕</span>
           <div class="res-detail">
             <span class="res-tag">น้ำตาล</span>
@@ -267,10 +260,10 @@
         <!-- Action buttons -->
         <div class="rabbit-actions">
           <button class="btn-pixel btn-feed" onclick="UI.feedRabbit()" id="btn-feed">
-            🥕 ให้น้ำตาล (+12⚡)
+            🥕 ให้น้ำตาล (+15⚡)
           </button>
-          <button class="btn-pixel btn-convert" onclick="UI.convertGlucoseToSugar()" id="btn-convert">
-            🍬→🥕 แปลง (2รอบ=1น้ำตาล)
+          <button class="btn-pixel btn-auto" onclick="UI.toggleAutoCycle()" id="auto-toggle-btn" title="เปิด/ปิด วัฏจักรคาลวินอัตโนมัติ — ไม่ต้องเดินมากดรอบละครั้ง">
+            🔁 คาลวิน AUTO: OFF
           </button>
         </div>
 
@@ -319,7 +312,7 @@
           </div>
           <div class="cycle-row2">
             <span id="cycle-timer-label" class="cycle-timer">10.0 วิ</span>
-            <span class="cycle-stats-row">รอบ: <b id="stat-cycles">0</b> | กลูโคส: <b id="stat-total-glucose">0</b></span>
+            <span class="cycle-stats-row">รอบ: <b id="stat-cycles">0</b> | น้ำตาล: <b id="stat-total-sugar">0</b></span>
           </div>
         </div>
 
@@ -331,7 +324,7 @@
           </div>
           <div id="board-entity" class="board-entity">🌱 รอการสั่งงาน</div>
           <div id="board-analogy" class="board-analogy">
-            เปรียบเทียบ: บ่อน้ำ → ตัก H₂O ใส่เครื่อง Light Reaction → ผลิต ATP + NADPH → คาลวินสร้างกลูโคส → โรงงานไฟฟ้า⚡ ส่งกำลังไปหมู่บ้าน 4 หลัง 🏘️ — อย่าปล่อยให้ไฟดับ ไม่งั้นชาวบ้านจะด่าวิศวกร!
+            เปรียบเทียบ: บ่อน้ำ → ตัก H₂O ใส่เครื่อง Light Reaction → ผลิต ATP + NADPH → คาลวินผลิตน้ำตาล 🥕 → ให้กระต่ายปั่นไฟ⚡ ส่งกำลังไปหมู่บ้าน 4 หลัง 🏘️ — อย่าปล่อยให้ไฟดับ ไม่งั้นชาวบ้านจะด่าวิศวกร!
           </div>
           <div class="board-grid">
             <div class="board-cell">

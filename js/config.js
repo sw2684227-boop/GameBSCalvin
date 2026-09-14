@@ -2,8 +2,8 @@ const CONFIG = {
   TILE_SIZE: 32,
   WORLD_WIDTH: 1600,
   WORLD_HEIGHT: 1200,
-  PLAYER_SPEED: 3.2,
-  ANIM_SPEED: 150,
+  PLAYER_SPEED: 4.2,
+  ANIM_SPEED: 140,
 
   RESOURCES: {
     CO2: { name: 'CO₂', icon: '🌫️', max: 999, color: 0x87ceeb },
@@ -11,8 +11,7 @@ const CONFIG = {
     LIGHT: { name: 'แสง', icon: '☀️', max: 999, color: 0xffe74a },
     ATP: { name: 'ATP', icon: '⚡', max: 999, color: 0xffd700 },
     NADPH: { name: 'NADPH', icon: '💧', max: 999, color: 0x5fff5f },
-    GLUCOSE: { name: 'กลูโคส', icon: '🍬', max: 999, color: 0x5fff5f },
-    SUGAR: { name: 'น้ำตาล (กินกระต่าย)', icon: '🥕', max: 999, color: 0xffaa55 }
+    SUGAR: { name: 'น้ำตาล', icon: '🥕', max: 999, color: 0xffaa55 }
   },
 
   LIGHT_MACHINE_WORLD: {
@@ -68,7 +67,7 @@ const CONFIG = {
   },
 
   CYCLE_CENTER: { x: 800, y: 580 },
-  CALVIN_CYCLE_MS: 10000,
+  CALVIN_CYCLE_MS: 8000,
   CYCLE_RADIUS: 200,
   CYCLE_STATIONS: 6,
   STATION_NAMES: [
@@ -171,7 +170,7 @@ const CONFIG = {
         { icon: '📥', label: 'รับ 3-PGA จากเครื่องที่ 1', text: '3-PGA ×6 โมเลกุล (C₃+P แต่ละตัว) เข้าสายพานชาร์จพลังงาน' },
         { icon: '⚡', label: 'ชาร์จด้วย ATP', text: 'ATP ×6 แตกเป็น ADP + Pi → Pi ถ่ายโอนให้ 3-PGA → กลายเป็น 1,3-BPG (C₃+2P) ที่มีพลังสูง (ADP ×6 กลับสู่แสง)' },
         { icon: '💧', label: 'ลดด้วย NADPH', text: 'NADPH ×6 ให้ H⁻ + อิเล็กตรอน → 1,3-BPG ถูกลด (reduce) → กลายเป็น G3P (Glyceraldehyde-3-phosphate, C₃+P) (NADP⁺ ×6 กลับสู่แสง)' },
-        { icon: '🧪', label: 'ได้ G3P ×6', text: 'G3P (C₃+P) ×6 โมเลกุล — น้ำตาล 3 คาร์บอนที่ใช้ทำกลูโคส หรือฟื้นฟู RuBP ต่อไป' },
+        { icon: '🧪', label: 'ได้ G3P ×6', text: 'G3P (C₃+P) ×6 โมเลกุล — โมเลกุล 3 คาร์บอนสำหรับฟื้นฟู RuBP หรือสะสมทบทำน้ำตาล 🥕' },
         { icon: '✅', label: 'ตรวจบัญชีพลังงาน', text: 'ATP ×6 → ADP ×6 + Pi ×6 ✓ | NADPH ×6 → NADP⁺ ×6 ✓ | 3-PGA ×6 → G3P ×6 ✓' }
       ],
       detail: {
@@ -193,11 +192,11 @@ const CONFIG = {
       color: '#bfa53a',
       bg: 0xbfa53a,
       steps: [
-        { icon: '📦', label: 'รับ G3P ×6 จากเครื่องที่ 2', text: 'G3P ×6 โมเลกุล (C₃+P แต่ละตัว) เข้าเครื่อง — แยก 1 ตัวออกไปทำน้ำตาล (กลูโคส) เหลือ G3P ×5' },
+        { icon: '📦', label: 'รับ G3P ×6 จากเครื่องที่ 2', text: 'G3P ×6 โมเลกุล (C₃+P แต่ละตัว) เข้าเครื่อง — แยก 1 ตัวออกไปทำน้ำตาล เหลือ G3P ×5' },
         { icon: '🔢', label: 'นับ Carbon ที่เหลือ', text: 'G3P ×5 = คาร์บอน 5×3C = 15C + 5P รวมกัน เตรียมจัดเรียงใหม่เป็น RuBP (C₅+2P)' },
         { icon: '⚡', label: 'เติม ATP ×3', text: 'ATP ×3 แตกเป็น ADP ×3 + Pi ×3 → Pi เพิ่มฟอสเฟตให้โมเลกุลช่วยจัดเรียง C₅ (ADP ×3 กลับสู่แสง)' },
         { icon: '🔄', label: 'จัดเรียงใหม่เป็น RuBP', text: 'เอนไซม์จัดเรียงคาร์บอน 15C + ฟอสเฟต 6P → 3 กลุ่ม × (5C+2P) = RuBP ×3 โมเลกุล พร้อมใช้งานใหม่' },
-        { icon: '✅', label: 'ตรวจบัญชีและวนซ้ำ', text: 'G3P ×5 (15C+5P) + ATP ×3 (3P) → RuBP ×3 (15C+6P) + ADP ×3 ✓ | RuBP กลับไปเครื่องที่ 1 | สะสม G3P ×2 = กลูโคส ×1!' }
+        { icon: '✅', label: 'ตรวจบัญชีและวนซ้ำ', text: 'G3P ×5 (15C+5P) + ATP ×3 (3P) → RuBP ×3 (15C+6P) + ADP ×3 ✓ | RuBP กลับไปเครื่องที่ 1 | สะสม G3P ×2 = น้ำตาล ×1!' }
       ],
       detail: {
         title: 'เครื่องจักรที่ 3: Regeneration (ฟื้นฟู RuBP เพื่อวนซ้ำ)',
@@ -205,7 +204,7 @@ const CONFIG = {
         fillWhat: 'G3P ×5 + ATP ×3 (G3P ×1 ถูกแยกออกทำน้ำตาล)',
         remainWhat: 'ADP ×3 + Pi บางส่วน → ส่งกลับขั้นตอนแสง',
         outputWhat: 'RuBP (C₅+2P) ×3 โมเลกุล พร้อมตรึง CO₂ รอบถัดไป',
-        nextFillWhat: 'RuBP ×3 → กลับเครื่องที่ 1 | G3P สะสม 2 รอบ = กลูโคส 1 ห่อ → แปลงน้ำตาล → ปั่นไฟ!'
+        nextFillWhat: 'RuBP ×3 → กลับเครื่องที่ 1 | G3P สะสม 2 รอบ = น้ำตาล ×1 → เอาไปให้กระต่ายปั่นไฟ!'
       },
       costs: { ATP: 3 },
       outputs: { 'RuBP': 3 }
@@ -240,16 +239,15 @@ const CONFIG = {
 
   ELECTRICITY: {
     MAX: 100,
-    START: 60,
+    START: 70,
     CRITICAL: 20,
     OUT: 0,
-    DRAIN_PER_SEC: 0.1
+    DRAIN_PER_SEC: 1 / 3
   },
 
   RABBIT: {
-    GLUCOSE_TO_SUGAR: 1,
     SUGAR_PER_RUN: 1,
-    ELECTRICITY_PER_RUN: 12,
+    ELECTRICITY_PER_RUN: 15,
     RUN_DURATION: 3500
   },
 
@@ -279,7 +277,7 @@ const CONFIG = {
 };
 
 const GameState = {
-  res: { CO2: 0, WATER: 0, LIGHT: 0, ATP: 0, NADPH: 0, GLUCOSE: 0, G3P: 0, SUGAR: 0 },
+  res: { CO2: 0, WATER: 0, LIGHT: 0, ATP: 0, NADPH: 0, G3P: 0, SUGAR: 0 },
   currentLocation: 'factory',
   isCycleRunning: false,
   cycleStage: -1,

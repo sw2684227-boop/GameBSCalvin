@@ -224,7 +224,8 @@ button {
 .zoom-menu.hidden { display: none; }
 
 .btn-feed,
-.btn-convert {
+.btn-convert,
+.btn-auto {
   width: 100%;
   border-width: 2px;
   font-size: 11px;
