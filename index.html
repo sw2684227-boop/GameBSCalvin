@@ -2,8 +2,11 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>👷 วิศวกรไฟฟ้า: เกมสอนวัฏจักรคาลวิน 🌿</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>🌲 กรมป่าไม้: ฟื้นฟูป่าด้วยวัฏจักรคาลวิน 🌿</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;800&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/mobile-fix.css" />
   <link rel="stylesheet" href="css/cutscene.css" />
@@ -49,27 +52,13 @@
     </div>
   </div>
 
-  <!-- Game Over overlay -->
-  <div id="game-over-overlay" class="hidden">
-    <div class="go-frame">
-      <div class="go-title">👨‍👩‍👧‍👦 ประชาชนบุกด่าน! �</div>
-      <div class="go-desc">
-        <b style="color:#ff8888">ชาวบ้านทั้ง 4 ครอบครัวรวมกันด่า:</b><br/>
-        <span style="color:#ffe08a">"ไอ้<b style="color:#ffffff">วิศวกร</b>! ไฟดับหมดหมดเลย! <br/>ทำไมปล่อยให้กระต่ายนอนหลับ! <br/>แกไม่เหมาะกับงานนี้เลย! พลัดตำแหน่ง!"</span><br/><br/>
-        วัฏจักรคาลวินทั้งหมด: <b id="go-cycles">0</b> รอบ<br/>
-        ผลิตน้ำตาลทั้งหมด: <b id="go-sugar">0</b> ชิ้น
-      </div>
-      <button class="btn-pixel btn-reset" onclick="UI.resetGame(true)">🔄 กลับไปผลิตไฟใหม่!</button>
-    </div>
-  </div>
-
   <!-- ======== MAIN GAME CONTAINER ======== -->
   <!-- Phaser appends canvas here (parent: 'center-panel') -->
   <div id="game-container">
 
     <!-- ── TOP BAR ── -->
     <div class="top-bar">
-      <div class="factory-badge">👷 วิศวกรไฟฟ้า</div>
+      <div class="factory-badge">🌲 กรมป่าไม้</div>
 
       <div class="resource-shelf">
         <div class="res-box" id="box-co2" title="CO₂ – รับจากจุดรับ CO₂ ในฉากโรงงาน">
@@ -86,32 +75,23 @@
             <span id="stat-water" class="res-num">0</span>
           </div>
         </div>
-        <div class="res-box res-play" id="box-atp" onclick="LightMiniGame.open()" title="ATP – ผลิตจากเครื่องขั้นแสงเมื่อตักน้ำ | กดเพื่อเล่นมินิเกมหาแสง (บูสต์)">
+        <div class="res-box" id="box-atp" title="ATP – ผลิตจากเครื่องขั้นแสงเมื่อตักน้ำ">
           <span class="res-icon">⚡</span>
           <div class="res-detail">
             <span class="res-tag">ATP</span>
             <span id="stat-atp" class="res-num">0</span>
           </div>
-          <span class="res-play-chip">🎮 หาแสง</span>
         </div>
-        <div class="res-box res-play" id="box-nadph" onclick="LightMiniGame.open()" title="NADPH – ผลิตจากเครื่องขั้นแสงเมื่อตักน้ำ | กดเพื่อเล่นมินิเกมหาแสง (บูสต์)">
+        <div class="res-box" id="box-nadph" title="NADPH – ผลิตจากเครื่องขั้นแสงเมื่อตักน้ำ">
           <span class="res-icon">💧</span>
           <div class="res-detail">
             <span class="res-tag">NADPH</span>
             <span id="stat-nadph" class="res-num">0</span>
           </div>
-          <span class="res-play-chip">🎮 หาแสง</span>
-        </div>
-        <div class="res-box res-boost" id="box-light" onclick="LightMiniGame.open()" title="☀️ แสง (บูสต์) – ใช้เพื่อเร่งการผลิตของเครื่องขั้นแสง | กดเล่นหาแสงเพื่อเติม">
-          <span class="res-icon">☀️</span>
-          <div class="res-detail">
-            <span class="res-tag">แสง</span>
-            <span id="stat-light" class="res-num">0</span>
-          </div>
         </div>
         <div class="res-divider"></div>
-        <div class="res-box res-sugar" title="น้ำตาล – ผลิตจากวัฏจักรคาลวิน ให้กระต่ายกินเพื่อปั่นไฟ">
-          <span class="res-icon">🥕</span>
+        <div class="res-box res-sugar" title="น้ำตาล – ผลิตจากวัฏจักรคาลวิน เอาไปป้อนต้นกล้าในสวนป่า">
+          <span class="res-icon">🍬</span>
           <div class="res-detail">
             <span class="res-tag">น้ำตาล</span>
             <span id="stat-sugar" class="res-num">0</span>
@@ -127,6 +107,9 @@
             <button class="btn-pixel btn-zoom" onclick="GameView.zoomOut()" title="ซูมออก">－</button>
           </div>
         </div>
+        <button class="btn-pixel btn-sfx" id="sfx-toggle-btn" onclick="UI.toggleSfx()" title="เปิด/ปิดเสียง">🔊</button>
+        <button class="btn-pixel btn-save" onclick="UI.openSaveMenu()" title="ช่องเซฟ / โหลด / ลบ">💾</button>
+        <button class="btn-pixel btn-ach" onclick="UI.openAch()" title="ความสำเร็จ">🏆</button>
         <button class="btn-pixel btn-help"   onclick="Tutorial.start()" title="เรื่องราว / วิธีเล่น">📖</button>
         <button class="btn-pixel btn-full"    onclick="UI.toggleFullscreen()">⛶</button>
         <button class="btn-pixel btn-reset"   onclick="UI.resetGame()">⚙</button>
@@ -139,166 +122,51 @@
       <!-- ── LEFT PANEL ── -->
       <div class="left-panel">
 
-        <!-- Rabbit Scene -->
-        <div id="rabbit-scene">
-          <div class="scene-bg">
-            <!-- Stars -->
-            <div class="star s1"></div><div class="star s2"></div><div class="star s3"></div>
-            <div class="star s4"></div><div class="star s5"></div><div class="star s6"></div>
-            <div class="star s7"></div><div class="star s8"></div>
-
-            <!-- บ้านกระต่าย + โรงงานไฟฟ้า (กลาง-ซ้าย ใกล้ปั่นไฟ) -->
-            <div class="power-plant">
-              <div class="pp-ear pp-ear-l"></div>
-              <div class="pp-ear pp-ear-r"></div>
-              <div class="pp-ear-inner pp-ear-l-i"></div>
-              <div class="pp-ear-inner pp-ear-r-i"></div>
-              <div class="pp-smoke-stack pp-s1"><div class="pp-smoke s1"></div><div class="pp-smoke s2"></div></div>
-              <div class="pp-smoke-stack pp-s2"><div class="pp-smoke s1"></div><div class="pp-smoke s2"></div></div>
-              <div class="pp-roof"></div>
-              <div class="pp-carrot pp-carrot-left">🥕</div>
-              <div class="pp-carrot pp-carrot-right">🥕</div>
-              <div class="pp-body">
-                <div class="pp-window"></div>
-                <div class="pp-window w2"></div>
-                <div class="pp-door"></div>
-                <div class="pp-transformer"></div>
-              </div>
-              <div class="pp-base"></div>
-              <div class="pp-cheek pp-cheek-l"></div>
-              <div class="pp-cheek pp-cheek-r"></div>
-              <div class="pp-light" id="pp-light"></div>
-              <div class="village-label">🐰 บ้านกระต่ายไฟฟ้า</div>
-            </div>
-
-            <!-- เสาไฟส่งกำลัง -->
-            <div class="electric-pole ep1"></div>
-            <div class="electric-pole ep2"></div>
-            <div class="electric-pole ep3"></div>
-
-            <!-- หมู่บ้านประชาชน 4 หลัง (ขวา) -->
-            <div class="village-house vh1">
-              <div class="vh-roof"></div>
-              <div class="vh-walls">
-                <div class="vh-window house-light-window"></div>
-                <div class="vh-door"></div>
-              </div>
-              <div class="vh-base"></div>
-              <div class="person">👩</div>
-            </div>
-            <div class="village-house vh2">
-              <div class="vh-roof r2"></div>
-              <div class="vh-walls w2">
-                <div class="vh-window house-light-window"></div>
-                <div class="vh-door d2"></div>
-              </div>
-              <div class="vh-base"></div>
-              <div class="person">👨</div>
-            </div>
-            <div class="village-house vh3">
-              <div class="vh-roof r3"></div>
-              <div class="vh-walls w3">
-                <div class="vh-window house-light-window"></div>
-                <div class="vh-door"></div>
-              </div>
-              <div class="vh-base"></div>
-              <div class="person">👵</div>
-            </div>
-            <div class="village-house vh4">
-              <div class="vh-roof"></div>
-              <div class="vh-walls">
-                <div class="vh-window house-light-window"></div>
-                <div class="vh-door d2"></div>
-              </div>
-              <div class="vh-base"></div>
-              <div class="person">👦</div>
-            </div>
-
-            <!-- ไฟรวมของหมู่บ้าน -->
-            <div class="house-light" id="house-light"></div>
-
-            <!-- สายไฟ SVG ต่อเนื่องจากโรงงาน → เสา → บ้าน -->
-            <svg class="power-wire-grid" viewBox="0 0 300 110" preserveAspectRatio="none">
-              <!-- สายจากโรงงานไปเสา 1 2 3 -->
-              <path d="M 30 70 Q 55 40 80 55" stroke="#ffd75e" stroke-width="2.2" fill="none" stroke-dasharray="4 3" opacity="0.75"/>
-              <path d="M 80 55 Q 108 30 140 48" stroke="#ffd75e" stroke-width="2.2" fill="none" stroke-dasharray="4 3" opacity="0.75"/>
-              <path d="M 140 48 Q 170 25 205 42" stroke="#ffd75e" stroke-width="2.2" fill="none" stroke-dasharray="4 3" opacity="0.75"/>
-              <!-- สายแยกไปยังบ้าน 4 หลัง -->
-              <path d="M 80 55  Q 95 72 110 82" stroke="#ffd75e" stroke-width="1.8" fill="none" stroke-dasharray="4 3" opacity="0.7"/>
-              <path d="M 140 48 Q 150 68 165 82" stroke="#ffd75e" stroke-width="1.8" fill="none" stroke-dasharray="4 3" opacity="0.7"/>
-              <path d="M 205 42 Q 220 62 235 80" stroke="#ffd75e" stroke-width="1.8" fill="none" stroke-dasharray="4 3" opacity="0.7"/>
-              <path d="M 205 42 Q 245 52 272 82" stroke="#ffd75e" stroke-width="1.8" fill="none" stroke-dasharray="4 3" opacity="0.7"/>
-              <!-- สปาร์คลอยเลื่อนตามสาย -->
-              <circle class="power-spark" r="3" fill="#ffff88">
-                <animateMotion dur="1.8s" repeatCount="indefinite"
-                  path="M 30 70 Q 55 40 80 55 Q 108 30 140 48 Q 170 25 205 42"/>
-              </circle>
-              <circle class="power-spark" r="2.2" fill="#fff16b">
-                <animateMotion dur="2.4s" repeatCount="indefinite" begin="0.4s"
-                  path="M 80 55 Q 95 72 110 82"/>
-              </circle>
-              <circle class="power-spark" r="2.2" fill="#fff16b">
-                <animateMotion dur="2.4s" repeatCount="indefinite" begin="0.7s"
-                  path="M 140 48 Q 150 68 165 82"/>
-              </circle>
-              <circle class="power-spark" r="2.2" fill="#fff16b">
-                <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.0s"
-                  path="M 205 42 Q 220 62 235 80"/>
-              </circle>
-              <circle class="power-spark" r="2.2" fill="#fff16b">
-                <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.3s"
-                  path="M 205 42 Q 245 52 272 82"/>
-              </circle>
-            </svg>
-
-            <!-- Wheel station (center-left) -->
-            <div class="wheel-station">
-              <div class="wheel-pole"></div>
-              <div class="wheel-frame-scene">
-                <div id="rabbit-wheel" class="rabbit-wheel">
-                  <div class="spoke"></div>
-                  <div class="spoke s2"></div>
-                  <div class="spoke s3"></div>
-                  <div class="spoke s4"></div>
-                  <div class="wheel-hub"></div>
-                </div>
-                <div id="rabbit-sprite" class="rabbit-sprite">🐰</div>
-              </div>
-            </div>
-
-            <!-- Ground -->
-            <div class="ground-strip"></div>
-            <div class="ground-grass"></div>
+        <!-- Forest Scene -->
+        <div id="forest-scene">
+          <div class="scene-bg forest-bg">
+            <div class="forest-sun"></div>
+            <div class="forest-cloud c1"></div>
+            <div class="forest-cloud c2"></div>
+            <div class="forest-mountain m1"></div>
+            <div class="forest-mountain m2"></div>
+            <div class="forest-far-tree ft1"><svg class="tree-svg far" viewBox="0 0 96 96" aria-hidden="true"><ellipse cx="48" cy="92" rx="25" ry="6" fill="#0a2a0a" opacity="0.35"/><ellipse cx="48" cy="91" rx="24" ry="7" fill="#5c3a1a"/><ellipse cx="48" cy="89" rx="18" ry="5" fill="#8b5a2b"/><rect x="40.5" y="44" width="15" height="46" rx="4.5" fill="#8b5a2b" stroke="#5c3a1a" stroke-width="2.5"/><rect x="42.5" y="48" width="4.2" height="38" rx="2" fill="#a0722f" opacity="0.85"/><circle cx="22" cy="42" r="18" fill="#0e3d12"/><circle cx="74" cy="44" r="17" fill="#0e3d12"/><circle cx="30" cy="34" r="20" fill="#0e3d12"/><circle cx="66" cy="36" r="19" fill="#0e3d12"/><circle cx="38" cy="26" r="21" fill="#0e3d12"/><circle cx="58" cy="28" r="20" fill="#0e3d12"/><circle cx="48" cy="34" r="22" fill="#0e3d12"/><circle cx="48" cy="18" r="21" fill="#0e3d12"/><circle cx="38" cy="22" r="17" fill="#0e3d12"/><circle cx="58" cy="22" r="17" fill="#0e3d12"/><circle cx="44" cy="12" r="16" fill="#0e3d12"/><circle cx="54" cy="14" r="15" fill="#0e3d12"/><circle cx="22" cy="42" r="15" fill="#1b5e20"/><circle cx="74" cy="44" r="14" fill="#1b5e20"/><circle cx="30" cy="34" r="17" fill="#256b28"/><circle cx="66" cy="36" r="16" fill="#2e7d32"/><circle cx="38" cy="26" r="18" fill="#388e3c"/><circle cx="58" cy="28" r="17" fill="#43a047"/><circle cx="48" cy="34" r="19" fill="#43a047"/><circle cx="48" cy="18" r="18" fill="#4caf50"/><circle cx="38" cy="22" r="14" fill="#4caf50"/><circle cx="58" cy="22" r="14" fill="#4caf50"/><circle cx="44" cy="12" r="13" fill="#66bb6a"/><circle cx="54" cy="14" r="12" fill="#66bb6a"/><circle cx="41" cy="11" r="5" fill="#a5d6a7" opacity="0.8"/></svg></div>
+            <div class="forest-far-tree ft2"><svg class="tree-svg far" viewBox="0 0 96 96" aria-hidden="true"><ellipse cx="48" cy="91" rx="19" ry="5" fill="#0a2a0a" opacity="0.32"/><ellipse cx="48" cy="90" rx="18" ry="6" fill="#5c3a1a"/><ellipse cx="48" cy="88" rx="14" ry="5" fill="#8b5a2b"/><rect x="42.5" y="52" width="11" height="38" rx="3.3" fill="#8b5a2b" stroke="#5c3a1a" stroke-width="2.5"/><rect x="44.5" y="56" width="3.1" height="30" rx="2" fill="#a0722f" opacity="0.85"/><circle cx="30" cy="46" r="17" fill="#0e3d12"/><circle cx="66" cy="48" r="16" fill="#0e3d12"/><circle cx="34" cy="38" r="19" fill="#0e3d12"/><circle cx="62" cy="40" r="18" fill="#0e3d12"/><circle cx="48" cy="30" r="21" fill="#0e3d12"/><circle cx="42" cy="42" r="18" fill="#0e3d12"/><circle cx="54" cy="34" r="17" fill="#0e3d12"/><circle cx="44" cy="24" r="16" fill="#0e3d12"/><circle cx="54" cy="26" r="15" fill="#0e3d12"/><circle cx="30" cy="46" r="14" fill="#1b5e20"/><circle cx="66" cy="48" r="13" fill="#1b5e20"/><circle cx="34" cy="38" r="16" fill="#2e7d32"/><circle cx="62" cy="40" r="15" fill="#2e7d32"/><circle cx="48" cy="30" r="18" fill="#388e3c"/><circle cx="42" cy="42" r="15" fill="#43a047"/><circle cx="54" cy="34" r="14" fill="#4caf50"/><circle cx="44" cy="24" r="13" fill="#4caf50"/><circle cx="54" cy="26" r="12" fill="#66bb6a"/><circle cx="41" cy="21" r="5" fill="#a5d6a7" opacity="0.8"/></svg></div>
+            <div class="forest-far-tree ft3"><svg class="tree-svg far" viewBox="0 0 96 96" aria-hidden="true"><ellipse cx="48" cy="90" rx="15" ry="4" fill="#0a2a0a" opacity="0.3"/><rect x="44" y="62" width="8" height="28" rx="2.4" fill="#8b5a2b" stroke="#5c3a1a" stroke-width="2.5"/><rect x="46" y="66" width="2.24" height="20" rx="2" fill="#a0722f" opacity="0.85"/><circle cx="40" cy="56" r="14" fill="#0e3d12"/><circle cx="56" cy="58" r="13" fill="#0e3d12"/><circle cx="48" cy="48" r="16" fill="#0e3d12"/><circle cx="44" cy="52" r="13" fill="#0e3d12"/><circle cx="40" cy="56" r="11" fill="#2e7d32"/><circle cx="56" cy="58" r="10" fill="#388e3c"/><circle cx="48" cy="48" r="13" fill="#43a047"/><circle cx="44" cy="52" r="10" fill="#4caf50"/><circle cx="43" cy="43" r="4" fill="#a5d6a7" opacity="0.8"/></svg></div>
+            <div id="tree-plots" class="tree-plots"></div>
+            <div class="ground-strip forest-ground-strip"></div>
+            <div class="ground-grass forest-ground-grass"></div>
           </div>
-
-          <!-- Info bar -->
-          <div class="rabbit-info">
-            <span class="rabbit-name">🏭 หน่วยผลิตไฟฟ้า</span>
-            <span id="rabbit-status" class="rabbit-status">😴 หน่วยพักงาน</span>
+          <div class="forest-info">
+            <span class="forest-name">🌲 สวนป่ากรมป่าไม้</span>
+            <span id="forest-status" class="forest-status ok">🌱 เริ่มเพาะต้นกล้า...</span>
+            <span id="forest-medal" class="forest-medal hidden"></span>
           </div>
         </div>
 
-        <!-- Power Section -->
-        <div class="power-section">
+        <!-- Forest Progress -->
+        <div class="power-section forest-section">
           <div class="power-label">
-            <span class="power-icon">⚡</span>
-            <span>ไฟบ้าน</span>
-            <span id="power-percent">60%</span>
+            <span class="power-icon">🌳</span>
+            <span>ความสมบูรณ์ของป่า</span>
+            <span id="forest-percent">0%</span>
           </div>
           <div class="power-outer">
-            <div id="power-bar-inner" class="power-inner"></div>
-            <div id="power-bar-stripes" class="power-stripes"></div>
+            <div id="forest-bar-inner" class="power-inner"></div>
+            <div id="forest-bar-stripes" class="power-stripes"></div>
           </div>
-          <div id="power-status" class="power-status ok">😀 ประชาชนมีความสุข ไฟฟ้าเพียงพอ</div>
         </div>
 
         <!-- Action buttons -->
-        <div class="rabbit-actions">
-          <button class="btn-pixel btn-feed" onclick="UI.feedRabbit()" id="btn-feed">
-            🥕 ให้น้ำตาล (+15⚡)
-          </button>
+        <div class="forest-actions">
+          <div class="feed-hint" id="feed-hint">
+            💡 น้ำตาลเก็บจาก <b>เครื่องบรรจุ</b> 🍬 แล้วเดินไปใกล้ต้นไม้ กด <b>SPACE</b> (มือถือกด ⚡)
+          </div>
           <button class="btn-pixel btn-auto" onclick="UI.toggleAutoCycle()" id="auto-toggle-btn" title="เปิด/ปิด วัฏจักรคาลวินอัตโนมัติ — ไม่ต้องเดินมากดรอบละครั้ง">
             🔁 คาลวิน AUTO: OFF
+          </button>
+          <button class="btn-pixel btn-cycle hidden" id="action-trigger-btn" onclick="UI.triggerActionButton()" title="เริ่มวัฏจักรคาลวิน (ต้องมี CO₂ 3, ATP 9, NADPH 6)">
+            ▶ เริ่มวัฏจักรคาลวิน
           </button>
         </div>
 
@@ -309,12 +177,12 @@
       <div id="center-panel" class="center-panel">
         <!-- HUD: location name -->
         <div id="hud-location" class="hud-location">
-          <span id="loc-name">🏭 สวนใบไม้ (โรงงานหลัก)</span>
+          <span id="loc-name">🌳 สวนป่ากรมป่าไม้ (ศูนย์ฟื้นฟูป่า)</span>
         </div>
 
         <!-- Mobile drawer buttons -->
         <div class="mobile-side-controls" aria-label="เปิดแถบข้อมูล">
-          <button class="mobile-side-btn side-btn-left" onclick="UI.toggleSidebar('left')" aria-label="เปิดข้อมูลกระต่าย" title="ข้อมูลกระต่าย">🐰</button>
+          <button class="mobile-side-btn side-btn-left" onclick="UI.toggleSidebar('left')" aria-label="เปิดข้อมูลสวนป่า" title="ข้อมูลสวนป่า">🌳</button>
           <button class="mobile-side-btn side-btn-right" onclick="UI.toggleSidebar('right')" aria-label="เปิดสรุปปฏิกิริยา" title="สรุปปฏิกิริยา">📋</button>
         </div>
 
@@ -347,7 +215,7 @@
           </div>
           <div class="cycle-row2">
             <span id="cycle-timer-label" class="cycle-timer">10.0 วิ</span>
-            <span class="cycle-stats-row">รอบ: <b id="stat-cycles">0</b> | น้ำตาล: <b id="stat-total-sugar">0</b></span>
+            <span class="cycle-stats-row"></span>
           </div>
         </div>
 
@@ -359,7 +227,7 @@
           </div>
           <div id="board-entity" class="board-entity">🌱 รอการสั่งงาน</div>
           <div id="board-analogy" class="board-analogy">
-            เปรียบเทียบ: บ่อน้ำ → ตัก H₂O ใส่เครื่อง Light Reaction → ผลิต ATP + NADPH → คาลวินผลิตน้ำตาล 🥕 → ให้กระต่ายปั่นไฟ⚡ ส่งกำลังไปหมู่บ้าน 4 หลัง 🏘️ — อย่าปล่อยให้ไฟดับ ไม่งั้นชาวบ้านจะด่าวิศวกร!
+            เปรียบเทียบ: เก็บ CO₂ → ตัก H₂O ใส่เครื่อง Light Reaction → ผลิต ATP+NADPH → คาลวินผลิตน้ำตาล 🍬 → เอาไปป้อนต้นกล้าในสวนป่า 🌱 ให้โตจนเป็นป่าอุดมสมบูรณ์ 🌳 — ไม่ต้องรีบ แค่ฟาร์มให้ป่ากลับมาเขียวอย่างทั่วถึง! — เจ้าหน้าที่กรมป่าไม้ 🌲
           </div>
           <div class="board-grid">
             <div class="board-cell">
@@ -395,6 +263,7 @@
         <div id="mp-head" class="mp-head">
           <span id="mp-icon">🌫️➡️🧩</span>
           <span id="mp-title">เครื่องจักรที่ 1: Carbon Fixation</span>
+          <span id="mp-status" class="mp-status">● รอทำงาน</span>
         </div>
         <div class="mp-visual-area" id="mp-visual-area">
           <div class="mp-viz-head">
@@ -452,19 +321,75 @@
       </div>
     </div>
 
-    <!-- Light MiniGame overlay -->
-    <div id="light-minigame-overlay" class="panel-overlay hidden">
-      <div class="lm-frame" onclick="event.stopPropagation()">
-        <div class="lm-head">
-          <span class="lm-title">☀️ มินิเกมหาแสง: จับโฟตอน!</span>
-          <button class="btn-pixel btn-close" onclick="LightMiniGame.close()">✕ ปิด</button>
+    <!-- Ending overlay (ฉากจบ — จบเกม) -->
+    <div id="ending-overlay" class="panel-overlay hidden" onclick="UI.hideEnding()">
+      <div class="ending-frame" onclick="event.stopPropagation()">
+        <div class="ending-art">
+          <div class="end-firework f1"></div>
+          <div class="end-firework f2"></div>
+          <div class="end-firework f3"></div>
+          <div class="end-sun"></div>
+          <div class="end-birds"><span>🐦</span><span>🕊️</span></div>
+          <div class="end-confetti"></div>
+          <div class="end-forest-line">
+            <span>🌲</span><span>🌳</span><span>🌴</span><span>🌳</span><span>🌲</span>
+          </div>
+          <div class="end-happy">🎉 🥳 🌳 👏</div>
         </div>
-        <div class="lm-info">
-          <span id="lm-timer" class="lm-timer">⏱ 15.0 วิ</span>
-          <div class="lm-gauge-outer"><div id="lm-gauge" class="lm-gauge"></div></div>
-          <span id="lm-msg" class="lm-msg">ขยับเมาส์/นิ้วให้ทุ่งจับโฟตอนที่ตกลงมา</span>
+        <div class="ending-content">
+          <div class="ending-title">🎉 ป่าอุดมสมบูรณ์! 🎉</div>
+          <div class="ending-sub">ภารกิจฟื้นฟูป่าของกรมป่าไม้ — สำเร็จแล้ว! ตอนนี้ป่าอีก 5 ต้นกลับเขียวชอุ่มเต็มพื้นที่</div>
+          <div class="ending-stats">
+            <div class="ending-stat"><span class="st-ico">⏱️</span><span class="st-tag">เวลาที่ใช้</span><b id="end-time">-</b></div>
+            <div class="ending-stat"><span class="st-ico">🌀</span><span class="st-tag">รอบคาลวิน</span><b id="end-cycles">-</b></div>
+            <div class="ending-stat"><span class="st-ico">🍬</span><span class="st-tag">น้ำตาลผลิตได้</span><b id="end-glucose">-</b></div>
+            <div class="ending-stat"><span class="st-ico">🌱</span><span class="st-tag">ต้นไม้ฟื้นคืน</span><b id="end-trees">-</b></div>
+          </div>
+          <div class="ending-buttons">
+            <button class="btn-pixel ending-continue" onclick="UI.hideEnding()">🌿 อยู่ต่อ</button>
+            <button class="btn-pixel ending-restart" onclick="UI.restartFromEnding()">🔄 เริ่มใหม่</button>
+          </div>
+          <div class="ending-note">อยู่ต่อ = ฟาร์มต่อได้ไม่จำกัดเวลา · เริ่มใหม่ = เริ่มเล่นใหม่ทั้งหมดนับเวลาใหม่</div>
         </div>
-        <canvas id="lm-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- Start screen (แสดงตอนเข้าเว็บครั้งแรก) -->
+    <div id="start-overlay" class="panel-overlay hidden">
+      <div class="start-frame">
+        <div class="start-art">
+          <div class="start-sun"></div>
+          <div class="start-trees"><span>🌲</span><span>🌳</span><span>🌴</span><span>🌳</span><span>🌲</span></div>
+          <div class="start-title">🌲 กรมป่าไม้<br/>ฟื้นฟูป่าด้วยวัฏจักรคาลวิน 🌿</div>
+          <div class="start-sub">เก็บ CO₂ · ตักน้ำ · ปั่นแสง · วัฏจักรคาลวิน · ให้น้ำตาลต้นไม้ — จนป่าอุดมสมบูรณ์!</div>
+        </div>
+        <div class="start-actions">
+          <button class="btn-pixel btn-start-main" onclick="UI.openSaveMenu()">📂 เลือกช่องเซฟ</button>
+          <button class="btn-pixel btn-start-alt" onclick="UI.startFreshNow()">▶ เริ่มเกมใหม่ทันที</button>
+          <button class="btn-pixel btn-start-story" onclick="UI.hideStartScreen(); Tutorial.start();">📖 ดูเรื่องราว</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save menu (หลายช่อง บันทึก/โหลด/ลบได้) -->
+    <div id="save-menu-overlay" class="panel-overlay hidden" onclick="UI.hideSaveMenu()">
+      <div class="save-frame" onclick="event.stopPropagation()">
+        <div class="save-head">
+          <span class="save-title">💾 ช่องเซฟ</span>
+          <button class="btn-pixel btn-close" onclick="UI.hideSaveMenu()">✕ ปิด</button>
+        </div>
+        <div id="save-slot-list" class="save-slot-list"></div>
+      </div>
+    </div>
+
+    <!-- Achievements (ความสำเร็จ) -->
+    <div id="achievement-overlay" class="panel-overlay hidden" onclick="Achievements.close()">
+      <div class="ach-frame" onclick="event.stopPropagation()">
+        <div class="ach-head">
+          <span class="ach-title">🏆 ความสำเร็จ <span id="ach-count">0/0</span></span>
+          <button class="btn-pixel btn-close" onclick="Achievements.close()">✕ ปิด</button>
+        </div>
+        <div id="ach-list" class="ach-list"></div>
       </div>
     </div>
 
@@ -479,13 +404,15 @@
 
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/saveManager.js"></script>
+  <script src="js/achievements.js"></script>
   <script src="js/assets.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/calvinCycle.js"></script>
   <script src="js/lightReaction.js"></script>
-  <script src="js/minigame.js"></script>
   <script src="js/player.js"></script>
   <script src="js/touchControls.js"></script>
+  <script src="js/sfx.js"></script>
   <script src="js/tutorial.js"></script>
   <script src="js/game.js"></script>
 </body>

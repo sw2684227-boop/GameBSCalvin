@@ -11,8 +11,6 @@ const LightReaction = {
   WATER_TANK_CAPACITY: 20,
   GAIN_ATP: 2,
   GAIN_NADPH: 2,
-  BOOST_GAIN_ATP: 4,
-  BOOST_GAIN_NADPH: 4,
 
   startProducer(scene) {
     this._scene = scene;
@@ -24,7 +22,7 @@ const LightReaction = {
         '🌊 นำน้ำ H₂O ไปใส่กล่องน้ำของเครื่องขั้นแสง',
         'บ่อน้ำ → กล่องน้ำเครื่อง Light Reaction → ATP + NADPH → คาลวิน',
         'H₂O ในกล่อง 0/' + this.WATER_TANK_CAPACITY,
-        `ATP +${this.GAIN_ATP} + NADPH +${this.GAIN_NADPH} (มีแสง = ×${this.BOOST_GAIN_ATP / this.GAIN_ATP})`,
+        `ATP +${this.GAIN_ATP} + NADPH +${this.GAIN_NADPH}`,
         'O₂ ปล่อยออกสู่บรรยากาศ'
       );
     }
@@ -38,7 +36,7 @@ const LightReaction = {
   },
 
   loadWater(scene) {
-    if (!scene || GameState.isGameOver) return;
+    if (!scene) return;
     const availableSpace = this.WATER_TANK_CAPACITY - this._waterTank;
     if (availableSpace <= 0) {
       if (UI && UI.showToast) {
@@ -64,7 +62,7 @@ const LightReaction = {
   },
 
   _startNextTick(scene) {
-    if (!scene || GameState.isGameOver || this._waterTank < this.WATER_PER_TICK) {
+    if (!scene || this._waterTank < this.WATER_PER_TICK) {
       this.isRunning = false;
       this._updateTankDisplay();
       return;
@@ -75,7 +73,7 @@ const LightReaction = {
   },
 
   _tick(scene) {
-    if (GameState.isGameOver || this._waterTank < this.WATER_PER_TICK) {
+    if (this._waterTank < this.WATER_PER_TICK) {
       this.isRunning = false;
       this._updateTankDisplay();
       return;
@@ -83,37 +81,34 @@ const LightReaction = {
     try {
       this._waterTank -= this.WATER_PER_TICK;
       const res = GameState.res;
-      const boosted = (res.LIGHT || 0) > 0;
-      if (boosted) {
-        res.LIGHT = Math.max(0, (res.LIGHT || 0) - 1);
-      }
-      const gainAtP = boosted ? this.BOOST_GAIN_ATP : this.GAIN_ATP;
-      const gainNadph = boosted ? this.BOOST_GAIN_NADPH : this.GAIN_NADPH;
+      const gainAtP = this.GAIN_ATP;
+      const gainNadph = this.GAIN_NADPH;
       res.ATP = Math.min(CONFIG.RESOURCES.ATP.max, (res.ATP || 0) + gainAtP);
       res.NADPH = Math.min(CONFIG.RESOURCES.NADPH.max, (res.NADPH || 0) + gainNadph);
+      GameState.atpMade = (GameState.atpMade || 0) + gainAtP;
       UI.updateInventory();
       GameState.save();
 
       this._updateTankDisplay();
       if (!this._notified && UI && UI.showToast) {
         this._notified = true;
-        UI.showToast((boosted ? '⚡' : '🌊') + ' Light Reaction ผลิต ATP + NADPH แล้ว', 1800);
+        UI.showToast('🌊 Light Reaction ผลิต ATP + NADPH แล้ว', 1800);
       }
+      if (typeof SFX !== 'undefined' && SFX.play) SFX.play('produce');
 
       if (!scene) return;
       const cfg = CONFIG.LIGHT_MACHINE_WORLD;
       const cx = cfg.x;
       const cy = cfg.y - 12;
-      const boostTag = boosted ? '  ⚡เร็ว' : '';
-      const tx = scene.add.text(cx, cy - 24, `+${gainAtP} ⚡ATP  +${gainNadph} 💧NADPH${boostTag}`, {
-        fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: boosted ? '13px' : '11px', color: boosted ? '#ffee8a' : '#d0ffb0',
+      const tx = scene.add.text(cx, cy - 24, `+${gainAtP} ⚡ATP  +${gainNadph} 💧NADPH`, {
+        fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '11px', color: '#d0ffb0',
         stroke: '#12240f', strokeThickness: 3
       }).setOrigin(0.5).setDepth(200);
       scene.tweens.add({
         targets: tx, y: cy - 110, alpha: 0, scale: 1.3,
         duration: 700, ease: 'Cubic.easeOut', onComplete: () => tx.destroy()
       });
-      for (let b = 0; b < (boosted ? 3 : 2); b++) {
+      for (let b = 0; b < 2; b++) {
         const bub = scene.add.text(cx + (Math.random() - 0.5) * 60, cy - 6, 'O₂', {
           fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#ff8a8a',
           stroke: '#1a0f05', strokeThickness: 2

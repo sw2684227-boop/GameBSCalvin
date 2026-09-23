@@ -13,6 +13,7 @@ const PixelAssets = {
     this.genWaterTiles(scene);
     this.genCollectibles(scene);
     this.genSigns(scene);
+    this.genAmbient(scene);
   },
 
   /* ── ชุดรูปวาดสไตล์การ์ตูน (โค้งมน, รอยยิ้ม, outline) ── */
@@ -52,16 +53,16 @@ const PixelAssets = {
 
     // สนามหญ้าเขียวขจี — ป้ายกลมๆ โทนเขียวอ่อน + ดอกหญ้าเล็กๆ
     const lawnPatches = [
-      [44, 52, 27, 0x3f8f3f, 0.5], [122, 44, 23, 0x459545, 0.45],
-      [66, 128, 22, 0x357c35, 0.5], [142, 126, 26, 0x3a863a, 0.45],
-      [20, 150, 15, 0x459545, 0.4], [100, 92, 15, 0x54a854, 0.45],
-      [170, 30, 14, 0x357c35, 0.4]
+      [44, 52, 27, 0x66bb6a, 0.5], [122, 44, 23, 0x81c784, 0.45],
+      [66, 128, 22, 0x4caf50, 0.5], [142, 126, 26, 0x5bc560, 0.45],
+      [20, 150, 15, 0x81c784, 0.4], [100, 92, 15, 0xa5d6a7, 0.45],
+      [170, 30, 14, 0x4caf50, 0.4]
     ];
     const lawnExtras = [];
     for (let i = 0; i < 16; i++) {
       lawnExtras.push({
         type: 'blade', x: 12 + Math.random() * 168, y: 12 + Math.random() * 158, a: 0.6 + Math.random() * 0.8,
-        c: Math.random() > 0.5 ? 0x6ac06a : 0x245f24
+        c: Math.random() > 0.5 ? 0x81c784 : 0x2e7d32
       });
     }
     for (let i = 0; i < 4; i++) {
@@ -110,7 +111,7 @@ const PixelAssets = {
   genPlayer(scene) {
     const s = 32;
     const dirs = ['down', 'up', 'left', 'right'];
-    const skin = 0xffd7a0, hat = 0xffd75e, hatD = 0xf0b33a, shirt = 0xff6a4a, overalls = 0x3a6acf, boot = 0x3a2a1a, hairC = 0x5a3a1a;
+    const skin = 0xffd7a0, hat = 0x3a7a2a, hatD = 0x2a5a1a, shirt = 0x5a8a3a, overalls = 0x9a8a4a, boot = 0x3a2a1a, hairC = 0x5a3a1a;
     dirs.forEach(dir => {
       for (let f = 0; f < 4; f++) {
         const g = scene.make.graphics({ add: false });
@@ -158,7 +159,7 @@ const PixelAssets = {
           this._circ(g, 20, 11, 1.7, 0x1a0a0a);
         }
 
-        // หมวกนิรภัย
+        // หมวกเจ้าหน้าที่ป่าไม้ (wid brim cap)
         this._rr(g, 8, 0, 16, 7, 3, hat);
         this._rr(g, 5, 4, 22, 3, 1, hatD);
         this._rr(g, 8, 2, 16, 2, 1, 0xfff0c0);
@@ -176,13 +177,13 @@ const PixelAssets = {
       for (let i = 0; i < 8; i++) {
         const x = 4 + Math.random() * (s - 8);
         const y = 4 + Math.random() * (s - 8);
-        const c = Math.random() > 0.5 ? CONFIG.COLORS.grass2 : 0x3f843f;
+        const c = Math.random() > 0.5 ? CONFIG.COLORS.grass2 : 0x66bb6a;
         this._circ(g, x, y, 2.4, c, 0.9);
       }
       for (let i = 0; i < 5; i++) {
         const x = 5 + Math.random() * (s - 10);
         const y = 5 + Math.random() * (s - 10);
-        this._ell(g, x, y, 1.8, 3.4, 0x6ac06a, 0.8);
+        this._ell(g, x, y, 1.8, 3.4, 0xa5d6a7, 0.8);
       }
       g.generateTexture(`grass_${v}`, s, s);
     }
@@ -207,31 +208,82 @@ const PixelAssets = {
   },
 
   genTree(scene) {
-    const s = 64;
-    for (let v = 0; v < 3; v++) {
+    const canopy = (g, blobs) => {
+      blobs.forEach(b => this._circ(g, b[0], b[1], b[2] + 3, 0x0e3d12));
+      blobs.forEach(b => this._circ(g, b[0], b[1], b[2], b[3]));
+    };
+    const hi = (g, list) => {
+      list.forEach(h => {
+        this._circ(g, h[0], h[1], h[2], 0xa5d6a7, 0.8);
+        this._circ(g, h[0] - 1, h[1] - 1, h[2] * 0.45, 0xc8e6c9, 0.9);
+      });
+    };
+    const trunk = (g, x, yTop, w, h, flare) => {
+      if (flare) {
+        this._ell(g, x, yTop + h, w * 1.6, 7, 0x5c3a1a);
+        this._ell(g, x, yTop + h - 2, w * 1.25, 5, 0x8b5a2b);
+      }
+      this._rr(g, x - w / 2, yTop, w, h, w * 0.3, 0x8b5a2b);
+      this._ol(g, x - w / 2, yTop, w, h, w * 0.3, 0x5c3a1a, 2.5);
+      this._rr(g, x - w / 2 + 2, yTop + 4, Math.max(2, w * 0.28), h - 8, 2, 0xa0722f, 0.85);
+    };
+
+    (() => {
       const g = scene.make.graphics({ add: false });
-      this._ell(g, 34, 62, 16, 5, 0x0a2a0a, 0.3); // เงา
-      // ลำต้น
-      this._rr(g, 26, 38, 13, 22, 4, CONFIG.COLORS.wood);
-      this._ol(g, 26, 38, 13, 22, 4, CONFIG.COLORS.woodDark, 2);
-      this._rr(g, 29, 40, 4, 18, 2, 0x7a4a24);
-      // พุ่มใบ (วงกลมเรียง)
-      const leaf = [0x3a8a3a, 0x4aaa4a, 0x2f7a2f][v];
-      const leafH = [0x5ab85a, 0x6aca6a, 0x4aa04a][v];
-      this._circ(g, 30, 20, 16, leaf);
-      this._circ(g, 46, 22, 15, leaf);
-      this._circ(g, 38, 14, 17, leaf);
-      this._circ(g, 36, 24, 17, leafH);
-      this._ol(g, 20, 6, 34, 30, 18, 0x1f551f, 2.5);
-      // ไฮไลต์
-      this._circ(g, 26, 10, 5, 0x7ade7a, 0.9);
-      // แอปเปิ้ล
-      this._circ(g, 33, 16, 3, 0xff5940);
-      this._circ(g, 45, 27, 3, 0xff5940);
-      this._circ(g, 26, 28, 3, 0xff5940);
-      this._circ(g, 34, 31, 3, 0xffb340);
-      g.generateTexture(`tree_${v}`, s, s);
-    }
+      this._ell(g, 48, 90, 15, 4, 0x0a2a0a, 0.3);
+      trunk(g, 48, 62, 8, 28, false);
+      canopy(g, [
+        [40, 56, 11, 0x2e7d32], [56, 58, 10, 0x388e3c],
+        [48, 48, 13, 0x43a047], [44, 52, 10, 0x4caf50]
+      ]);
+      hi(g, [[44, 44, 4]]);
+      g.generateTexture('tree_0', 96, 96);
+    })();
+
+    (() => {
+      const g = scene.make.graphics({ add: false });
+      this._ell(g, 48, 91, 19, 5, 0x0a2a0a, 0.32);
+      trunk(g, 48, 52, 11, 38, true);
+      this._rr(g, 34, 56, 13, 5, 2, 0x8b5a2b);
+      this._ol(g, 34, 56, 13, 5, 2, 0x5c3a1a, 2);
+      this._rr(g, 49, 50, 13, 5, 2, 0x8b5a2b);
+      this._ol(g, 49, 50, 13, 5, 2, 0x5c3a1a, 2);
+      canopy(g, [
+        [30, 46, 14, 0x1b5e20], [66, 48, 13, 0x1b5e20],
+        [34, 38, 16, 0x2e7d32], [62, 40, 15, 0x2e7d32],
+        [48, 30, 18, 0x388e3c],
+        [42, 42, 15, 0x43a047], [54, 34, 14, 0x4caf50],
+        [44, 24, 13, 0x4caf50], [54, 26, 12, 0x66bb6a]
+      ]);
+      hi(g, [[42, 22, 5], [34, 34, 3.5]]);
+      g.generateTexture('tree_1', 96, 96);
+    })();
+
+    (() => {
+      const g = scene.make.graphics({ add: false });
+      this._ell(g, 48, 92, 25, 6, 0x0a2a0a, 0.35);
+      trunk(g, 48, 44, 15, 46, true);
+      this._rr(g, 28, 50, 17, 6, 3, 0x8b5a2b);
+      this._ol(g, 28, 50, 17, 6, 3, 0x5c3a1a, 2);
+      this._rr(g, 50, 42, 17, 6, 3, 0x8b5a2b);
+      this._ol(g, 50, 42, 17, 6, 3, 0x5c3a1a, 2);
+      canopy(g, [
+        [22, 42, 15, 0x1b5e20], [74, 44, 14, 0x1b5e20],
+        [30, 34, 17, 0x256b28], [66, 36, 16, 0x2e7d32],
+        [38, 26, 18, 0x388e3c], [58, 28, 17, 0x43a047],
+        [48, 34, 19, 0x43a047],
+        [48, 18, 18, 0x4caf50], [38, 22, 14, 0x4caf50],
+        [58, 22, 14, 0x4caf50], [44, 12, 13, 0x66bb6a],
+        [54, 14, 12, 0x66bb6a]
+      ]);
+      hi(g, [[42, 12, 5], [54, 10, 4], [32, 22, 3.5]]);
+      [[28, 38], [68, 40], [44, 42], [58, 32], [40, 30]].forEach(([fx, fy], i) => {
+        this._circ(g, fx, fy, 4.5, 0x8b1a1a);
+        this._circ(g, fx, fy, 3.5, i % 2 ? 0xff5940 : 0xff7043);
+        this._circ(g, fx - 1, fy - 1, 1.3, 0xffcdd2, 0.9);
+      });
+      g.generateTexture('tree_2', 96, 96);
+    })();
   },
 
   genFactory(scene) {
@@ -555,6 +607,26 @@ const PixelAssets = {
       }
       g.generateTexture(key, 32, 32);
     });
+  },
+
+  genAmbient(scene) {
+    const mk = (key, wing, wing2) => {
+      const g = scene.make.graphics({ add: false });
+      this._ell(g, 10, 9, 8, 6, wing);
+      this._ell(g, 22, 9, 8, 6, wing);
+      this._ell(g, 11, 14, 6, 4.5, wing2);
+      this._ell(g, 21, 14, 6, 4.5, wing2);
+      this._circ(g, 8.5, 7.5, 2, 0xffffff, 0.85);
+      this._circ(g, 23.5, 7.5, 2, 0xffffff, 0.85);
+      this._rr(g, 14.5, 5, 3, 12, 1.5, 0x2a2a2a);
+      this._circ(g, 16, 4.5, 2.2, 0x2a2a2a);
+      g.lineStyle(1, 0x2a2a2a, 1);
+      g.beginPath(); g.moveTo(15.5, 3.5); g.lineTo(13, 1); g.strokePath();
+      g.beginPath(); g.moveTo(16.5, 3.5); g.lineTo(19, 1); g.strokePath();
+      g.generateTexture(key, 32, 22);
+    };
+    mk('butterfly_a', 0xff9ec4, 0xffcdd2);
+    mk('butterfly_b', 0x7ec8ff, 0xb8e6ff);
   },
 
   genSigns(scene) {

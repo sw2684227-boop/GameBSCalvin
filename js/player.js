@@ -33,6 +33,11 @@ const Player = {
 
   update(dt, scene) {
     if (!this.sprite) return;
+    const locked = GameState.cutsceneActive || (typeof document !== 'undefined' && document.body && document.body.classList.contains('ui-modal-open'));
+    if (locked) {
+      this.isMoving = false;
+      return;
+    }
     let vx = 0, vy = 0;
     const k = this.keys;
     const vk = window.VirtualKeys;
@@ -102,6 +107,25 @@ const Player = {
         LightReaction.loadWater(this.scene);
         this.scene.cameras.main.flash(160, 255, 231, 74);
         return;
+      }
+
+      const sugarCfg = CONFIG.SUGAR_MACHINE;
+      if (sugarCfg) {
+        const sugarDistance = Phaser.Math.Distance.Between(this.sprite.x, this.sprite.y, sugarCfg.x, sugarCfg.y);
+        if (sugarDistance < sugarCfg.radius + 30) {
+          this.scene._collectSugarFromMachine();
+          return;
+        }
+      }
+
+      const fieldTrees = this.scene.fieldTreeObjs || [];
+      for (let i = 0; i < fieldTrees.length; i++) {
+        const t = fieldTrees[i];
+        const td = Phaser.Math.Distance.Between(this.sprite.x, this.sprite.y, t.holder.x, t.holder.y);
+        if (td < 95) {
+          UI.feedTree(i);
+          return;
+        }
       }
 
       const d = Phaser.Math.Distance.Between(

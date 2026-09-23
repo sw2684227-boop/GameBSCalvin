@@ -45,7 +45,7 @@ const CalvinCycle = {
     }
     this._drawConveyorRing(scene, cx, cy, R - 40);
     this._drawReturnRing(scene, cx, cy, R + 50);
-    this.cycleDuration = CONFIG.CALVIN_CYCLE_MS;
+    this.cycleDuration = this.getCycleDuration();
     const lr = (typeof LightReaction !== 'undefined' && LightReaction) ? LightReaction : { GAIN_ATP: 2, GAIN_NADPH: 2, BOOST_GAIN_ATP: 4 };
     UI.updateChalkboard(
       'LIGHT: READY',
@@ -60,28 +60,65 @@ const CalvinCycle = {
 
   _drawConveyorRing(scene, cx, cy, R) {
     const isMobile = (typeof window !== 'undefined' && window.innerWidth) <= 768;
-    const pts = isMobile ? 40 : 72;
+    const pts = isMobile ? 48 : 80;
+    const base = scene.add.graphics().setDepth(2);
+    base.lineStyle(16, 0x120a05, 0.95);
+    base.strokeCircle(cx, cy, R);
+    base.lineStyle(12, 0x6b4423, 1);
+    base.strokeCircle(cx, cy, R);
+    base.lineStyle(3, 0xc89050, 0.85);
+    base.strokeCircle(cx, cy, R + 5);
+    base.strokeCircle(cx, cy, R - 5);
+    base.lineStyle(2, 0xffd75e, 0.2);
+    base.strokeCircle(cx, cy, R);
+
     const tileSprites = [];
+    const rails = [];
     for (let i = 0; i < pts; i++) {
       const ang = (i / pts) * Math.PI * 2;
       const px = cx + Math.cos(ang) * R;
       const py = cy + Math.sin(ang) * R;
-      const seg = scene.add.rectangle(px, py, 20, 10, 0x5c3a1a).setDepth(3);
-      seg.setStrokeStyle(2, 0x3a2a1a, 1);
+      const seg = scene.add.rectangle(px, py, 18, 14, 0x5c3a1a).setDepth(3);
+      seg.setStrokeStyle(2, 0x2a1a0a, 1);
       seg.rotation = ang + Math.PI / 2;
       tileSprites.push(seg);
+      if (i % 4 === 0) {
+        const nx = Math.cos(ang), ny = Math.sin(ang);
+        const tick = scene.add.rectangle(cx + nx * (R + 10), cy + ny * (R + 10), 4, 10, 0xc89050, 0.75).setDepth(3);
+        tick.rotation = ang;
+        rails.push(tick);
+      }
+    }
+    const glints = [];
+    for (let i = 0; i < 5; i++) {
+      const core = scene.add.circle(cx + R, cy, 5.5, 0xffd75e, 0.85).setDepth(5);
+      const ring = scene.add.circle(cx + R, cy, 10, 0xffd75e, 0.18).setDepth(5);
+      glints.push({ core, ring });
     }
     scene.tweens.addCounter({
-      from: 0, to: 1, duration: 6000, repeat: -1, ease: 'Linear',
+      from: 0, to: 1, duration: 18000, repeat: -1, ease: 'Linear',
       onUpdate: (tw) => {
-        const off = (tw.getValue() * 2 * Math.PI) / pts;
+        const v = tw.getValue();
+        const off = (v * 2 * Math.PI) / pts;
+        const stripes = [0x7a5a3a, 0x5c3a1a, 0x8b6538, 0x4a3220];
         tileSprites.forEach((s, i) => {
           const ang = (i / pts) * Math.PI * 2 + off;
           s.x = cx + Math.cos(ang) * R;
           s.y = cy + Math.sin(ang) * R;
           s.rotation = ang + Math.PI / 2;
-          const c = (Math.floor(i + tw.getValue() * pts) % 2 === 0) ? 0x5c3a1a : 0x7a5a3a;
-          s.fillColor = c;
+          s.fillColor = stripes[Math.floor(i + v * pts) % stripes.length];
+          s.alpha = 0.72 + 0.28 * Math.sin(ang * 3 + v * Math.PI * 2);
+        });
+        glints.forEach((g, gi) => {
+          const ang = v * Math.PI * 2 + (gi / glints.length) * Math.PI * 2;
+          g.core.x = cx + Math.cos(ang) * R;
+          g.core.y = cy + Math.sin(ang) * R;
+          g.ring.x = g.core.x;
+          g.ring.y = g.core.y;
+          const pulse = 0.4 + 0.6 * Math.abs(Math.sin(ang * 3));
+          g.core.alpha = pulse;
+          g.ring.alpha = 0.1 + 0.22 * pulse;
+          g.ring.scale = 0.85 + 0.4 * pulse;
         });
       }
     });
@@ -89,15 +126,38 @@ const CalvinCycle = {
 
   _drawReturnRing(scene, cx, cy, R) {
     const isMobile = (typeof window !== 'undefined' && window.innerWidth) <= 768;
-    const pts = isMobile ? 36 : 56;
+    const pts = isMobile ? 40 : 64;
+    const path = scene.add.graphics().setDepth(1);
+    path.lineStyle(10, 0x1a1008, 0.85);
+    path.strokeCircle(cx, cy, R);
+    path.lineStyle(5, 0x3a2814, 1);
+    path.strokeCircle(cx, cy, R);
+    path.lineStyle(2, 0x8b6538, 0.5);
+    path.strokeCircle(cx, cy, R + 3);
+
+    const segs = [];
     for (let i = 0; i < pts; i++) {
       const ang = (i / pts) * Math.PI * 2;
       const px = cx + Math.cos(ang) * R;
       const py = cy + Math.sin(ang) * R;
-      const seg = scene.add.rectangle(px, py, 14, 6, 0x2a1a0a).setDepth(2);
+      const seg = scene.add.rectangle(px, py, 12, 7, 0x2a1a0a).setDepth(2);
       seg.setStrokeStyle(1, 0x1a0a05, 1);
       seg.rotation = ang + Math.PI / 2;
+      segs.push(seg);
     }
+    scene.tweens.addCounter({
+      from: 0, to: 1, duration: 24000, repeat: -1, ease: 'Linear',
+      onUpdate: (tw) => {
+        const off = (tw.getValue() * 2 * Math.PI) / pts;
+        segs.forEach((s, i) => {
+          const ang = (i / pts) * Math.PI * 2 - off;
+          s.x = cx + Math.cos(ang) * R;
+          s.y = cy + Math.sin(ang) * R;
+          s.rotation = ang + Math.PI / 2;
+          s.alpha = 0.55 + 0.35 * Math.abs(Math.sin(ang * 2));
+        });
+      }
+    });
   },
 
   _shade(hex, pct) {
@@ -157,13 +217,13 @@ const CalvinCycle = {
       fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: lay.col,
       stroke: '#1a0f05', strokeThickness: 3
     }).setOrigin(0.5).setDepth(11);
-    const subText = scene.add.text(mx, my + 46, lay.sub, {
-      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#ffd75e',
+    const subText = scene.add.text(mx, my + 40, lay.sub, {
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '13px', color: '#ffd75e',
       stroke: '#1a0f05', strokeThickness: 2
     }).setOrigin(0.5).setDepth(11);
     const inputDesc = lay.inputs.map(inp => `${inp.icon} ×${inp.n}`).join('  +  ');
-    const inputText = scene.add.text(mx, my + 56, inputDesc, {
-      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '15px', color: '#ffffff',
+    const inputText = scene.add.text(mx, my + 62, inputDesc, {
+      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '14px', color: '#ffffff',
       stroke: '#1a0f05', strokeThickness: 2
     }).setOrigin(0.5).setDepth(11);
     lay.inputs.forEach((inp, k) => {
@@ -223,12 +283,18 @@ const CalvinCycle = {
       }).setOrigin(0.5).setDepth(9);
       this.dockItems.push({ ic, t, x: px, y: py, key: it.key });
     });
-    const note = scene.add.text(cx, cy + 100, '☀️ เติมน้ำให้เครื่องขั้นแสง แล้วเดินมากด SPACE เพื่อเริ่มคาลวิน', {
-      fontFamily: 'Prompt, Sarabun, sans-serif', fontSize: '12px', color: '#ffd75e',
-      stroke: '#1a0f05', strokeThickness: 2
-    }).setOrigin(0.5).setDepth(9);
-    scene.tweens.add({ targets: note, alpha: { from: 0.5, to: 1 }, duration: 700, yoyo: true, repeat: -1 });
-    this.dockItems.push({ note });
+    this._updateDockLabels();
+  },
+
+  _updateDockLabels() {
+    const need = CONFIG.CO2_PER_CYCLE;
+    const loaded = GameState.co2Loaded || 0;
+    this.dockItems.forEach(it => {
+      if (it.key === 'pickup_co2' && it.t) {
+        it.t.setText(`CO₂ ${loaded}/${need}`);
+        it.t.setColor(loaded >= need ? '#8dff8d' : '#ffd75e');
+      }
+    });
   },
 
   _setDock(show) {
@@ -275,8 +341,8 @@ const CalvinCycle = {
     const cx = CONFIG.CYCLE_CENTER.x;
     const cy = CONFIG.CYCLE_CENTER.y;
     const groups = [
-      { key: 'pickup_co2', n: 3, target: this.machineObjs[0], spread: 28 },
-      { key: 'pickup_atp', n: 6, target: this.machineObjs[1], spread: 42 },
+      { key: 'pickup_co2', n: CONFIG.CO2_PER_CYCLE, target: this.machineObjs[0], spread: 28 },
+      { key: 'pickup_atp', n: 9, target: this.machineObjs[1], spread: 42 },
       { key: 'pickup_nadph', n: 6, target: this.machineObjs[1], spread: 42 }
     ];
     let total = 0;
@@ -304,33 +370,90 @@ const CalvinCycle = {
     UI.updateChalkboard(
       'DELIVERY', '🚚 กำลังส่งสารเข้าเครื่องจักร...',
       'CO₂ → เครื่องที่ 1 · ATP+NADPH → เครื่องที่ 2',
-      'CO2 3, ATP 9, NADPH 6', 'กำลังวางสาร...', '-'
+      'CO2 ' + CONFIG.CO2_PER_CYCLE + ', ATP 9, NADPH 6', 'กำลังวางสาร...', '-'
     );
   },
 
   triggerAction() {
+    if (GameState.isCycleRunning || this.actionInProgress) return;
+    const need = CONFIG.CO2_PER_CYCLE;
+    const loaded = GameState.co2Loaded || 0;
+    if (loaded < need) {
+      if ((GameState.res.CO2 || 0) <= 0) {
+        UI.showToast(`⚠️ ต้องการคาร์บอนเพิ่ม ${need - loaded} — ไปเก็บ CO₂ จากเครื่องดูดก่อน`, 2200);
+        return;
+      }
+      const inTeaching = (GameState.totalCycles || 0) < 6;
+      let put = inTeaching ? 1 : Math.min(GameState.res.CO2, need - loaded);
+      if (put <= 0) return;
+      GameState.res.CO2 -= put;
+      GameState.co2Loaded = loaded + put;
+      GameState.co2Inserts = (GameState.co2Inserts || 0) + 1;
+      UI.updateInventory();
+      if (typeof SFX !== 'undefined' && SFX.play) SFX.play('insert');
+      this._updateDockLabels();
+      GameState.save();
+      const left = need - GameState.co2Loaded;
+      if (left > 0) {
+        if (inTeaching) {
+          UI.showToast(`🌫️ ใส่คาร์บอนแล้ว ${GameState.co2Loaded}/${need} — ต้องการเพิ่มอีก ${left} (ทีละ 1 เฉพาะ 6 รอบแรก)`, 2400);
+        } else {
+          UI.showToast(`🌫️ ใส่คาร์บอน +${put} → ${GameState.co2Loaded}/${need} — ต้องการเพิ่มอีก ${left}`, 2200);
+        }
+        UI.updateChalkboard(
+          'CO₂ LOADING',
+          `🌫️ ใส่ CO₂ แล้ว ${GameState.co2Loaded}/${need}`,
+          inTeaching ? 'ช่วงสอน (6 รอบแรก): เก็บ CO₂ ทีละ 1 แล้วกด SPACE ใส่ทีละครั้ง' : 'ใส่ CO₂ ทีเดียวได้ตามจำนวนที่มี',
+          `CO₂ ${GameState.co2Loaded}/${need}`,
+          `ยังต้องการอีก ${left} คาร์บอน`,
+          '-'
+        );
+      } else {
+        UI.showToast(`✅ CO₂ ครบ ${need} แล้ว! ถ้ามี ATP ≥9 + NADPH ≥6 กด SPACE เริ่ม Calvin ได้เลย`, 2600);
+        UI.updateChalkboard(
+          'CO₂ READY',
+          `✅ CO₂ ครบ ${need}/${need} — พร้อมเริ่มวัฏจักร`,
+          'ต่อไปเช็ค ATP + NADPH แล้วกด SPACE ที่กลางวง',
+          `CO₂ ${need}, ATP ${GameState.res.ATP || 0}, NADPH ${GameState.res.NADPH || 0}`,
+          'กด SPACE เริ่ม Calvin',
+          '-'
+        );
+      }
+      return;
+    }
     if (GameState.pendingAction) {
       const cb = GameState.pendingAction;
       GameState.pendingAction = null;
       cb();
-    } else if (!GameState.isCycleRunning) {
+    } else {
       this.startCycle();
     }
   },
 
   getCycleDuration() {
-    return CONFIG.CALVIN_CYCLE_MS;
+    let tutDone = false;
+    try { tutDone = !!localStorage.getItem('calvin_tutorial_done'); } catch (e) { tutDone = false; }
+    return (tutDone && CONFIG.CALVIN_CYCLE_FAST_MS) ? CONFIG.CALVIN_CYCLE_FAST_MS : CONFIG.CALVIN_CYCLE_MS;
   },
 
   canStart() {
     const r = GameState.res;
-    return r.CO2 >= 3 && r.ATP >= 9 && r.NADPH >= 6;
+    return (GameState.co2Loaded || 0) >= CONFIG.CO2_PER_CYCLE && r.ATP >= 9 && r.NADPH >= 6;
   },
 
   startCycle() {
-    if (GameState.isCycleRunning || this.actionInProgress || GameState.isGameOver) return;
+    if (GameState.isCycleRunning || this.actionInProgress) return;
+    this._pendingAutoRestart = false;
+    const need = CONFIG.CO2_PER_CYCLE;
+    if ((GameState.co2Loaded || 0) < need) {
+      const tip = ((GameState.totalCycles || 0) < 6)
+        ? 'เดินมากด SPACE ใส่ CO₂ ทีละ 1 (เฉพาะ 6 รอบแรก)'
+        : 'เดินมากด SPACE ใส่ CO₂ จากที่เก็บไว้';
+      UI.showToast(`⚠️ ต้องการคาร์บอนเพิ่ม ${need - (GameState.co2Loaded || 0)} — ${tip}`, 2200);
+      return;
+    }
     if (!this.canStart()) {
-      UI.showToast('⚠️ วัตถุดิบไม่เพียงพอ! ต้องการ CO2 ≥3, ATP ≥9, NADPH ≥6', 2200);
+      UI.showToast('⚠️ วัตถุดิบไม่เพียงพอ! ต้องการ CO₂ ที่ใส่เครื่องแล้ว ≥3, ATP ≥9, NADPH ≥6', 2400);
       return;
     }
     GameState.isCycleRunning = true;
@@ -338,10 +461,12 @@ const CalvinCycle = {
     this.cycleDuration = this.getCycleDuration();
     this.cycleStartTime = performance.now();
 
-    GameState.res.CO2 -= 3;
+    GameState.co2Loaded = 0;
     GameState.res.ATP -= 9;
     GameState.res.NADPH -= 6;
     UI.updateInventory();
+    this._updateDockLabels();
+    GameState.save();
 
     UI.setActionButton('⏳ กำลังส่งสารเข้าเครื่องจักร...', false, null);
     this._setDock(false);
@@ -352,6 +477,7 @@ const CalvinCycle = {
       this._highlightStation(0, true);
       this._highlightStation(1, true);
       GameState.cycleStage = 0;
+      if (typeof SFX !== 'undefined' && SFX.play) SFX.play('phase');
       UI.updateChalkboard(
         'PHASE 1: FIXATION',
         '🌫️➡️🧩 เครื่องที่ 1: Carbon Fixation',
@@ -459,7 +585,7 @@ const CalvinCycle = {
     for (let i = 0; i < Math.min(3, startCount); i++) {
       const mol = this.molObjects[i];
       const from = (5 / 6) * Math.PI * 2 - Math.PI / 2;
-      const to = (1 / 6) * Math.PI * 2 - Math.PI / 2;
+      const to = (1 / 6) * Math.PI * 2 - Math.PI / 2 + Math.PI * 2;
       this._moveMolRing(mol, from, to, R, 900, () => {
         scene.cameras.main.shake(80, 0.006);
         mol.alpha = 0.3;
@@ -570,12 +696,17 @@ const CalvinCycle = {
             onComplete: () => {
               GameState.res.G3P += 1;
               UI.updateInventory();
+              if (GameState.phaserScene && GameState.phaserScene._updateSugarMachineStatus) {
+                GameState.phaserScene._updateSugarMachineStatus();
+              }
               scene.cameras.main.flash(400, 255, 220, 120);
               scene.tweens.add({ targets: picked, alpha: 0, scale: 0.2, duration: 700, onComplete: () => picked.destroy() });
               moved.splice(0, 1);
 
               if (GameState.res.G3P >= 2) {
                 this._assembleSugar();
+              } else if (GameState.res.G3P === 1) {
+                UI.showToast('🧪 ได้ G3P 1 โมเลกุล — ต้องการเข้าคาลวินอีก 1 ครั้ง เพื่อสร้างน้ำตาล 🍬', 2600);
               }
 
               GameState.totalCycles += 1;
@@ -624,12 +755,16 @@ const CalvinCycle = {
       duration: 1400, ease: 'Back.easeOut',
       onComplete: () => {
         GameState.res.G3P = 0;
-        GameState.res.SUGAR = Math.min(CONFIG.RESOURCES.SUGAR.max, (GameState.res.SUGAR || 0) + 1);
+        GameState.sugarReady = (GameState.sugarReady || 0) + 1;
         GameState.totalGlucose += 1;
         UI.updateInventory();
         UI.updateCycleStats();
+        if (GameState.phaserScene && GameState.phaserScene._updateSugarMachineStatus) {
+          GameState.phaserScene._updateSugarMachineStatus();
+        }
         scene.cameras.main.flash(500, 255, 255, 180);
-        UI.showToast('🐰 ประกอบน้ำตาลเสร็จ! +1 🥕 เอาไปให้กระต่ายได้เลย', 2200);
+        UI.showToast('🍬 ประกอบน้ำตาลเสร็จ! น้ำตาลไหลไปที่เครื่องบรรจุ → เดินไปกด SPACE เก็บ', 2600);
+        if (typeof SFX !== 'undefined' && SFX.play) SFX.play('sugar');
         GameState.save();
         scene.time.delayedCall(2400, () => {
           scene.tweens.add({ targets: robot, alpha: 0, scale: 0.3, y: fy - 80, duration: 1000, onComplete: () => robot.destroy() });
@@ -659,11 +794,66 @@ const CalvinCycle = {
 
     const dur = this.getCycleDuration();
     UI.setActionButton('▶ เริ่มวัฏจักรคาลวิน (' + (dur/1000).toFixed(2) + ' วิ/รอบ)', true, () => this.startCycle());
+    if (typeof SFX !== 'undefined' && SFX.play) SFX.play('cycleDone');
 
-    if (GameState.autoCycle && this.canStart()) {
-      GameState.phaserScene.time.delayedCall(400, () => {
-        if (GameState.autoCycle) this.startCycle();
-      });
+    if (GameState.autoCycle) {
+      const need = CONFIG.CO2_PER_CYCLE;
+      const missing = need - (GameState.co2Loaded || 0);
+      const have = GameState.res.CO2 || 0;
+      if (missing > 0 && have >= missing) {
+        GameState.res.CO2 -= missing;
+        GameState.co2Loaded = need;
+        UI.updateInventory();
+        this._updateDockLabels();
+        GameState.save();
+      }
+      if (this.canStart()) {
+        this._pendingAutoRestart = true;
+        GameState.phaserScene.time.delayedCall(400, () => {
+          this._pendingAutoRestart = false;
+          if (GameState.autoCycle) this.startCycle();
+        });
+      } else {
+        this._pendingAutoRestart = false;
+        if (GameState.res.CO2 || 0) {
+          UI.showToast('🔁 AUTO: CO₂ ที่มีไม่พอเต็มรอบ — AUTO จะวนต่อเองทันทีที่ CO₂ ครบ', 2400);
+        }
+      }
+    }
+  },
+
+  // เตรียมเครื่องคาลวินให้พร้อมก่อนโหลดเซฟ/เริ่มใหม่ (ล้างสถานะกลางรอบให้ปลอดภัย)
+  resetForLoad() {
+    const scene = GameState.phaserScene;
+    GameState.isCycleRunning = false;
+    GameState.cycleStage = -1;
+    GameState.pendingAction = null;
+    this.actionInProgress = false;
+    this._pendingAutoRestart = false;
+    if (this._phaseTimer && this._phaseTimer.remove) {
+      try { this._phaseTimer.remove(); } catch (e) {}
+      this._phaseTimer = null;
+    }
+    if (scene && scene.tweens) {
+      (this.molObjects || []).forEach(m => { if (scene.tweens.killTweensOf) scene.tweens.killTweensOf(m); });
+      (this.stationObjs || []).forEach((s, i) => { try { this._highlightStation(i, false); } catch (e) {} });
+      (this.machineObjs || []).forEach((m, i) => { try { this._highlightMachine(i, false); } catch (e) {} });
+    }
+    this._clearMols();
+    this._setDock(true);
+    this._updateDockLabels();
+    if (typeof UI !== 'undefined' && UI) {
+      if (typeof UI.updateCycleProgress === 'function') UI.updateCycleProgress(0, 0);
+      if (typeof UI.setMachineStatus === 'function') UI.setMachineStatus(0, 'wait');
+      if (typeof UI.updateChalkboard === 'function') {
+        UI.updateChalkboard('READY', 'เครื่องคาลวินพร้อมทำงาน',
+          'บ่อน้ำ → Light Reaction → ATP + NADPH → คาลวิน → น้ำตาล',
+          '-', 'RuBP ×3 พร้อมใช้', '-');
+      }
+      const dur = this.getCycleDuration();
+      if (typeof UI.setActionButton === 'function') {
+        UI.setActionButton('▶ เริ่มวัฏจักรคาลวิน (' + (dur / 1000).toFixed(2) + ' วิ/รอบ)', true, () => this.startCycle());
+      }
     }
   }
 };
