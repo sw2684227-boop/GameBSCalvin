@@ -182,6 +182,16 @@ const UI = {
     this.closeFullscreenGate();
   },
 
+  // เข้าเต็มจอตรงๆ โดยไม่แตะ overlay (ใช้จากปุ่มในหน้าเริ่มเกม/แถบบน)
+  enterFullscreen() {
+    const el = document.documentElement;
+    try {
+      if (el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+    } catch (e) { /* นักเบราเซอร์ไม่อนุญาต เช่น iOS */ }
+  },
+
   closeFullscreenGate() {
     const ov = document.getElementById('fullscreen-overlay');
     if (ov) ov.classList.add('hidden');

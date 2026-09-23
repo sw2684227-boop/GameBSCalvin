@@ -13,6 +13,13 @@ const MainScene = new Phaser.Class({
 
   create() {
     GameState.phaserScene = this;
+    // เรนเดอร์ตัวอักษรในแมพที่ความละเอียด 2x → ตอนซูมออก/จอมือถิลสั่นหายเบลอ
+    const _origAddText = this.add.text.bind(this.add);
+    this.add.text = (x, y, str, style) => {
+      const t = _origAddText(x, y, str, style);
+      if (t && typeof t.setResolution === 'function' && !(style && style.noRes)) t.setResolution(2);
+      return t;
+    };
     this._userZoom = 1;
     this.cameras.main.setBounds(0, 0, CONFIG.WORLD_WIDTH, CONFIG.WORLD_HEIGHT);
     this.cameras.main.setBackgroundColor(CONFIG.LOCATIONS.factory.bg);

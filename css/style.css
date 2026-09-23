@@ -2735,6 +2735,7 @@ button {
 .btn-start-main { background: linear-gradient(135deg, #4caf50, #1f5c26) !important; border-color: #8ce08a !important; }
 .btn-start-alt { background: linear-gradient(135deg, #e0a230, #9a6a12) !important; border-color: #ffd75e !important; }
 .btn-start-story { background: linear-gradient(135deg, #2d7db8, #16445f) !important; border-color: #7ac0e6 !important; }
+.btn-start-full { background: linear-gradient(135deg, #3aa0a0, #1a5a5a) !important; border-color: #5ad7d7 !important; }
 
 /* ช่องเซฟ */
 .save-frame {
