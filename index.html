@@ -19,6 +19,17 @@
     <div class="rotate-text">กรุณาหมุนมือถือเป็นแนวนอน<br/>Please rotate to landscape</div>
   </div>
 
+  <!-- Fullscreen gate — แตะ 1 ครั้ง เข้าเต็มจอ ตอนเข้าเว็บ -->
+  <div id="fullscreen-overlay" class="hidden">
+    <div class="fs-frame">
+      <div class="fs-icon">⛶</div>
+      <div class="fs-title">เล่นแบบเต็มจอ</div>
+      <div class="fs-sub">แตะปุ่มด้านล่างเพียง 1 ครั้ง<br/>เพื่อเพลิดเพลินกับพิกเซลฟูลจอ</div>
+      <button class="btn-pixel btn-fs-main" onclick="UI.requestFullscreenEnter()">⛶ เข้าสู่โหมดเต็มจอ</button>
+      <button class="btn-fs-skip" onclick="UI.skipFullscreenEnter()">ข้าม — เล่นแบบจอเล็ก</button>
+    </div>
+  </div>
+
   <!-- Tutorial HUD (in-game objectives) -->
   <div id="tutorial-hud" class="hidden">
     <div class="tut-hud-frame">
@@ -186,13 +197,12 @@
           <button class="mobile-side-btn side-btn-right" onclick="UI.toggleSidebar('right')" aria-label="เปิดสรุปปฏิกิริยา" title="สรุปปฏิกิริยา">📋</button>
         </div>
 
-        <!-- Mobile touch controls: D-pad + actions -->
+        <!-- Mobile touch controls: joystick (วงกลมลาก) + actions -->
         <div class="touch-controls">
-          <div class="dpad">
-            <button class="tbtn t-up" data-k="up">▲</button>
-            <button class="tbtn t-left" data-k="left">◀</button>
-            <button class="tbtn t-down" data-k="down">▼</button>
-            <button class="tbtn t-right" data-k="right">▶</button>
+          <div class="joypad" id="joypad">
+            <div class="joy-base">
+              <div class="joy-knob"></div>
+            </div>
           </div>
           <div class="touch-actions">
             <button class="tbtn t-act" data-k="interact">⚡</button>

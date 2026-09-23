@@ -11,6 +11,7 @@ const UI = {
       if (window.innerWidth > 960) this.closeSidebars();
     });
     this.syncSfxButton();
+    this.initFullscreenGate();
   },
 
   toggleSidebar(side) {
@@ -149,6 +150,45 @@ const UI = {
       else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
     }
+  },
+
+  /* ── หน้าจอ "แตะ 1 ครั้ง เข้าเต็มจอ" ตอนเข้าเว็บ ── */
+  initFullscreenGate() {
+    const ov = document.getElementById('fullscreen-overlay');
+    if (!ov) return;
+    if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement) {
+      ov.classList.add('hidden');
+      return;
+    }
+    ov.classList.remove('hidden');
+    document.body.classList.add('ui-modal-open');
+  },
+
+  requestFullscreenEnter() {
+    const el = document.documentElement;
+    const done = () => this.closeFullscreenGate();
+    let ret = null;
+    try {
+      if (el.requestFullscreen) ret = el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) ret = el.webkitRequestFullscreen();
+      else if (el.mozRequestFullScreen) ret = el.mozRequestFullScreen();
+    } catch (e) { ret = null; }
+    // ถึงเต็มจอไม่ได้ (เช่น iOS) ก็ปิดเกทให้เล่นต่อได้
+    if (ret && typeof ret.catch === 'function') ret.then(done).catch(done);
+    else done();
+  },
+
+  skipFullscreenEnter() {
+    this.closeFullscreenGate();
+  },
+
+  closeFullscreenGate() {
+    const ov = document.getElementById('fullscreen-overlay');
+    if (ov) ov.classList.add('hidden');
+    const so = document.getElementById('start-overlay');
+    const startOpen = so && !so.classList.contains('hidden');
+    if (startOpen) document.body.classList.add('ui-modal-open');
+    else document.body.classList.remove('ui-modal-open');
   },
 
   resetGame(force = false) {

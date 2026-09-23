@@ -139,16 +139,15 @@ canvas {
   }
   .top-actions { margin-left: 0; flex-wrap: nowrap; }
 
-  /* D-pad ขนาดเหมาะมือถือแนวนอน */
+  /* Joystick ขนาดเหมาะมือถือแนวนอน */
   .touch-controls {
     bottom: 8px;
     left: 10px;
     right: 10px;
   }
-  .dpad {
-    grid-template-columns: repeat(3, 50px);
-    grid-template-rows: repeat(2, 50px);
-    gap: 4px;
+  .joypad {
+    --joy-size: 118px;
+    --knob-size: 48px;
   }
   .tbtn {
     width: 50px;
@@ -181,12 +180,11 @@ canvas {
 
   .hud-location { top: 3px; font-size: 8px; padding: 2px 6px; }
 
-  /* D-pad เล็กลงแต่ยังกดง่าย */
+  /* Joystick เล็กลงแต่ยังลากง่าย */
   .touch-controls { bottom: 6px; left: 8px; right: 8px; }
-  .dpad {
-    grid-template-columns: repeat(3, 44px);
-    grid-template-rows: repeat(2, 44px);
-    gap: 3px;
+  .joypad {
+    --joy-size: 108px;
+    --knob-size: 44px;
   }
   .tbtn { width: 44px; height: 44px; font-size: 17px; }
   .t-act { width: 50px; height: 50px; font-size: 22px; }
@@ -210,10 +208,9 @@ canvas {
   .hud-location { display: none; }   /* ซ่อน HUD เพื่อประหยัดแนวตั้ง */
 
   .touch-controls { bottom: 4px; left: 6px; right: 6px; }
-  .dpad {
-    grid-template-columns: repeat(3, 40px);
-    grid-template-rows: repeat(2, 40px);
-    gap: 3px;
+  .joypad {
+    --joy-size: 96px;
+    --knob-size: 40px;
   }
   .tbtn { width: 40px; height: 40px; font-size: 15px; border-width: 2px; }
   .t-act { width: 46px; height: 46px; font-size: 20px; }
@@ -384,6 +381,18 @@ body.ui-modal-open .touch-controls { display: none !important; }
   margin: 0 auto;
 }
 
+/* ── Fullscreen gate (แตะ 1 ครั้ง เข้าเต็มจอ) ── */
+@media (pointer: coarse) {
+  .btn-fs-main { min-height: 56px; }
+}
+@media (max-height: 560px) {
+  .fs-icon { font-size: 44px; margin-bottom: 4px; }
+  .fs-title { font-size: 20px; }
+  .fs-sub { margin: 6px 0 12px; font-size: 12px; }
+  .btn-fs-main { font-size: 15px; padding: 12px 20px; }
+  .btn-fs-skip { margin-top: 10px; font-size: 12px; }
+}
+
 /* หน้าจอเตี้ย (มือถือแนวนอน ~height ≤ 560) — บีบอาร์ต ยกปุ่มขึ้นมาเห็นชัด */
 @media (max-height: 560px) {
   .start-art { margin-bottom: 10px; }
@@ -432,3 +441,55 @@ body.ui-modal-open .touch-controls { display: none !important; }
 /* ป้องกันการกระโดด UI จาก scrollbar บนจอสัมผัส */
 .panel-overlay { overscroll-behavior: contain; }
 .start-frame { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+
+/* ================================================================
+   MOBILE UX POLISH — ปุ่มกดง่าย + ฟอนต์กระชับสวย
+   ================================================================ */
+@media (pointer: coarse), (hover: none), (max-width: 960px) {
+
+  /* ทุกปุ่ม: จัดให้มีพื้นที่แตะบังคับขั้นต่ำ */
+  .btn-pixel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+  }
+  .top-actions .btn-pixel { min-height: 36px; }   /* แถบบนยิ่งแคบ ไว้ประหยัดแนวตั้ง */
+  .res-box { min-height: 40px; padding-top: 4px; padding-bottom: 4px; }
+
+  /* ปุ่มสำคัญ: แตะได้สบาย ≥48px */
+  .slot-actions .btn-pixel,
+  .save-head .btn-pixel,
+  .ach-head .btn-pixel,
+  .mp-head .btn-pixel,
+  .machine-card .btn-pixel,
+  .ending-buttons .btn-pixel,
+  #travel-toast .btn-pixel,
+  .tut-hud-actions .tut-btn {
+    min-height: 48px;
+  }
+
+  /* ฟอนต์หัวข้อ/แถวข้อมูลกระชับลง */
+  .save-title, .ach-title { font-size: 16px; }
+  .slot-name { font-size: 14px; }
+  .slot-ago  { font-size: 11px; }
+  .slot-body { font-size: 12px; }
+  .btn-slot  { font-size: 12px; padding: 8px 12px; min-width: 96px; }
+  .ach-ico   { font-size: 22px; }
+  .ach-name  { font-size: 12px; }
+  .btn-save, .btn-ach { font-size: 15px; }
+  .tut-hud-title { font-size: clamp(14px, 2.2vh, 18px); }
+  .tut-hud-desc  { font-size: clamp(12px, 1.8vh, 15px); }
+  .tut-pass-toast { font-size: 16px; }
+  .save-frame, .ach-frame { padding: 12px; }
+  .save-head, .ach-head { margin-bottom: 8px; }
+  .save-slot { padding: 10px 12px; }
+}
+
+/* จอแคบมาก: ความสำเร็จ 1 แถว 2 ช่อง + ปุ่มช่องเซฟเต็มแถว */
+@media (max-width: 640px) {
+  .ach-list { grid-template-columns: repeat(auto-fill, minmax(122px, 1fr)); gap: 8px; }
+  .slot-actions { display: flex; }
+  .slot-actions .btn-pixel { flex: 1; min-width: 72px; }
+  .rot-arrows { display: none; }
+}

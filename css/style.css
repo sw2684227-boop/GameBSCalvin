@@ -1392,21 +1392,58 @@ button {
   display: none;
 }
 
-.dpad {
-  display: grid;
-  grid-template-columns: repeat(3, 52px);
-  grid-template-rows: repeat(2, 52px);
-  grid-template-areas:
-    ". up ."
-    "left down right";
-  gap: 6px;
+.joypad {
+  --joy-size: 136px;
+  --knob-size: 54px;
+  position: relative;
+  width: var(--joy-size);
+  height: var(--joy-size);
   pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
-.t-up   { grid-area: up; }
-.t-left { grid-area: left; }
-.t-down { grid-area: down; }
-.t-right{ grid-area: right; }
+.joy-base {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 42%, rgba(54, 96, 54, 0.78), rgba(12, 28, 12, 0.7));
+  border: 3px solid rgba(255, 255, 255, 0.32);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.55), 0 8px 22px rgba(0, 0, 0, 0.5);
+}
+
+.joy-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--knob-size);
+  height: var(--knob-size);
+  margin: calc(var(--knob-size) / -2) 0 0 calc(var(--knob-size) / -2);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e2ffe2, #5ad77a 55%, #2f8f4a);
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.55), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+  will-change: transform;
+  transition: transform 0.04s linear;
+}
+
+.joy-knob::after {
+  content: '✚';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: rgba(12, 60, 24, 0.7);
+}
+
+.joypad.joy-active .joy-base {
+  border-color: rgba(90, 215, 122, 0.85);
+}
 
 .touch-actions {
   display: flex;
@@ -2497,7 +2534,7 @@ button {
   .tile-icon { font-size: 40px; margin: 4px 0; }
   .tile-name { font-size: 15px; }
   .tile-desc { font-size: 12px; }
-  .dpad { grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(2, 46px); }
+  .joypad { --joy-size: 118px; --knob-size: 46px; }
   .tbtn { width: 48px; height: 48px; font-size: 19px; }
 }
 
@@ -2637,6 +2674,46 @@ button {
 
 /* ══════════════ หน้าเริ่มเกม / ช่องเซฟ / ความสำเร็จ ══════════════ */
 .panel-overlay.hidden { display: none !important; }
+
+/* Fullscreen gate — แตะ 1 ครั้ง เข้าเต็มจอ */
+#fullscreen-overlay {
+  position: fixed; inset: 0;
+  width: 100vw; height: 100vh;
+  box-sizing: border-box;
+  background: radial-gradient(ellipse at 50% 30%, #1d5c24 0%, #0a1f0a 75%);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+#fullscreen-overlay.hidden { display: none !important; }
+.fs-frame { text-align: center; max-width: 420px; width: 100%; padding: 22px; }
+.fs-icon { font-size: 64px; animation: fsPulse 1.6s ease-in-out infinite; margin-bottom: 10px; filter: drop-shadow(0 0 18px rgba(255, 231, 74, 0.6)); }
+@keyframes fsPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.fs-title { font-size: 26px; font-weight: 800; color: #fff3a8; text-shadow: 0 3px 0 #1d3a0e, 0 0 18px rgba(255, 231, 74, 0.5); }
+.fs-sub { margin: 12px 0 20px; color: #cfefcf; font-size: 14px; line-height: 1.7; }
+.btn-fs-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  padding: 16px 28px;
+  width: 100%;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4caf50, #1f5c26) !important;
+  border-color: #8ce08a !important;
+}
+.btn-fs-skip {
+  background: none;
+  border: none;
+  color: #9dc39d;
+  font-size: 13px;
+  margin-top: 16px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 8px 4px;
+}
 
 #start-overlay { background: radial-gradient(ellipse at 50% 120%, #1d5c24, #0c2810 70%); }
 .start-frame { text-align: center; padding: 12px; max-height: calc(100dvh - 36px); width: 100%; overflow-y: auto; animation: startIn 0.5s ease-out; }
