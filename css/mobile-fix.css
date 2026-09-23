@@ -493,3 +493,194 @@ body.ui-modal-open .touch-controls { display: none !important; }
   .slot-actions .btn-pixel { flex: 1; min-width: 72px; }
   .rot-arrows { display: none; }
 }
+
+/* ================================================================
+   COMPACT LANDSCAPE — a phone is often short rather than narrow.
+   Prioritise the map/canvas and expose information through drawers.
+   ================================================================ */
+@media (orientation: landscape) and (pointer: coarse) and (max-height: 620px) {
+  .top-bar {
+    min-height: 34px;
+    padding: 2px max(6px, env(safe-area-inset-right)) 2px max(6px, env(safe-area-inset-left));
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+  .factory-badge { display: none; }
+  .resource-shelf {
+    order: 0;
+    width: auto;
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
+    gap: 3px;
+    padding: 0;
+    overflow: hidden;
+  }
+  .res-box { min-width: 0; min-height: 30px; padding: 2px 4px; gap: 2px; flex: 1 1 0; }
+  .res-icon { font-size: 13px; }
+  .res-tag, .res-divider { display: none; }
+  .res-num { font-size: 11px; }
+  .top-actions { gap: 2px; margin-left: 0; }
+  .top-actions .btn-pixel {
+    min-width: 30px;
+    min-height: 30px;
+    padding: 3px 4px;
+    font-size: 15px;
+    border-width: 2px;
+  }
+
+  .main-layout { overflow: hidden; }
+  .left-panel, .right-panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: min(86vw, 330px);
+    z-index: 80;
+    transition: transform .26s cubic-bezier(.22, .8, .2, 1);
+  }
+  .left-panel { left: 0; transform: translateX(-105%); }
+  .right-panel { right: 0; transform: translateX(105%); }
+  #game-container.sidebar-left-open .left-panel { transform: translateX(0); }
+  #game-container.sidebar-right-open .right-panel { transform: translateX(0); }
+  .sidebar-backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 70;
+    opacity: 0;
+    pointer-events: none;
+    border: 0;
+    background: rgba(0, 8, 4, .52);
+  }
+  #game-container.sidebar-left-open .sidebar-backdrop,
+  #game-container.sidebar-right-open .sidebar-backdrop { opacity: 1; pointer-events: auto; }
+
+  .mobile-side-controls { top: 6px; left: 8px; right: 8px; display: flex; }
+  .mobile-side-btn { width: 36px; height: 32px; font-size: 15px; border-width: 2px; }
+  .hud-location { top: 42px; max-width: 58%; font-size: 9px; padding: 3px 7px; }
+  .touch-controls { bottom: max(5px, env(safe-area-inset-bottom)); left: max(7px, env(safe-area-inset-left)); right: max(7px, env(safe-area-inset-right)); }
+  .joypad { --joy-size: 94px; --knob-size: 39px; }
+  .tbtn { width: 44px; height: 44px; font-size: 18px; }
+
+  /* Two cards per row are readable; the map can scroll instead of squeezing
+     four cards and their labels into a shallow landscape screen. */
+  .map-frame { padding: 10px 12px max(10px, env(safe-area-inset-bottom)); border-width: 3px; }
+  .map-title { font-size: 14px; line-height: 1.35; margin-bottom: 8px; padding-bottom: 7px; }
+  .map-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(150px, auto); gap: 8px; }
+  .map-tile { min-height: 150px; padding: 10px 8px; border-radius: 10px; }
+  .tile-icon { font-size: 42px; margin: 0; }
+  .tile-name { font-size: 14px; margin: 2px 0; }
+  .tile-desc, .tile-gain { font-size: 11px; }
+  .tile-gain { padding: 4px 8px; margin-top: 2px; }
+}
+
+/* ================================================================
+   PORTRAIT PHONE — the game now remains usable without forcing rotation.
+   The header becomes two compact rows and all secondary content stays in
+   drawers, leaving the centre panel and touch controls unobstructed.
+   ================================================================ */
+@media (max-width: 768px) and (orientation: portrait) {
+  #rotate-overlay { display: none !important; }
+  #game-container { height: 100dvh; min-height: 100dvh; }
+
+  .top-bar {
+    min-height: 76px;
+    padding: max(4px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) 4px max(6px, env(safe-area-inset-left));
+    gap: 4px;
+    flex-wrap: wrap;
+    align-content: center;
+  }
+  .factory-badge { display: none; }
+  .resource-shelf {
+    order: 2;
+    width: 100%;
+    flex: 0 0 100%;
+    padding: 0;
+    gap: 3px;
+    justify-content: stretch;
+    overflow: hidden;
+  }
+  .res-box { flex: 1 1 0; min-width: 0; min-height: 32px; padding: 2px 3px; gap: 2px; }
+  .res-icon { font-size: 13px; }
+  .res-tag, .res-divider { display: none; }
+  .res-num { font-size: 11px; }
+  .top-actions {
+    order: 1;
+    width: 100%;
+    margin: 0;
+    gap: 3px;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+  .top-actions .btn-pixel { min-width: 34px; min-height: 32px; padding: 3px 5px; font-size: 15px; border-width: 2px; }
+
+  .main-layout { min-height: 0; overflow: hidden; }
+  .left-panel, .right-panel { width: min(88vw, 340px); }
+  .mobile-side-controls { top: 8px; left: 8px; right: 8px; }
+  .mobile-side-btn { width: 40px; height: 38px; font-size: 17px; }
+  .hud-location { top: 52px; max-width: 68%; padding: 4px 8px; font-size: 9px; }
+
+  .touch-controls {
+    left: max(10px, env(safe-area-inset-left));
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(10px, env(safe-area-inset-bottom));
+  }
+  .joypad { --joy-size: 112px; --knob-size: 46px; }
+  .tbtn { width: 54px; height: 54px; font-size: 23px; }
+
+  .panel-overlay, #map-overlay, #fullscreen-overlay { padding: 8px; }
+  .machine-panel, .lm-frame, .save-frame, .ach-frame {
+    width: 100% !important;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 12px;
+  }
+  .machine-panel { padding: 12px; }
+  .mp-head { padding-right: 36px; }
+  #mp-canvas { height: 170px; }
+  .mp-grid { grid-template-columns: 1fr; }
+  .mp-cell.full { grid-column: span 1; }
+  .lm-frame { padding: 10px !important; }
+  .lm-info { gap: 6px; }
+  .lm-timer { min-width: 72px; font-size: 10px; }
+
+  .map-frame { padding: 12px 10px max(12px, env(safe-area-inset-bottom)); border-width: 3px; }
+  .map-title { font-size: 15px; margin-bottom: 10px; padding-bottom: 8px; line-height: 1.4; }
+  .map-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(170px, auto); gap: 8px; }
+  .map-tile { min-height: 170px; padding: 10px 7px; border-radius: 10px; }
+  .tile-icon { font-size: 46px; margin: 0; }
+  .tile-name { font-size: 14px; margin: 3px 0; }
+  .tile-desc, .tile-gain { font-size: 11px; line-height: 1.35; }
+  .tile-gain { padding: 4px 8px; margin-top: 2px; }
+
+  .start-frame { padding: 10px; max-height: calc(100dvh - 16px); }
+  .start-sun { width: 76px; height: 76px; }
+  .start-trees { font-size: 22px; margin-bottom: 6px; }
+  .start-title { font-size: 20px; }
+  .start-sub { font-size: 13px; line-height: 1.45; }
+  .start-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .start-actions .btn-pixel { min-width: 0; min-height: 46px; padding: 8px; font-size: 13px; }
+  .fs-frame { padding: 12px; }
+  .fs-icon { font-size: 48px; margin-bottom: 5px; }
+  .fs-title { font-size: 22px; }
+  .btn-fs-main { min-height: 52px; padding: 12px; font-size: 16px; }
+
+  .save-frame, .ach-frame { padding: 12px; }
+  .save-title, .ach-title { font-size: 17px; }
+  .save-slot { padding: 10px; }
+  .slot-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .slot-actions .btn-pixel { min-width: 0; }
+  .ach-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+}
+
+/* Small portrait devices retain readable controls without vertical clipping. */
+@media (max-width: 380px) and (orientation: portrait) {
+  .top-bar { min-height: 70px; }
+  .top-actions .btn-pixel { min-width: 30px; min-height: 30px; padding: 2px 3px; font-size: 14px; }
+  .res-box { min-height: 30px; }
+  .joypad { --joy-size: 98px; --knob-size: 40px; }
+  .tbtn { width: 48px; height: 48px; font-size: 20px; }
+  .hud-location { top: 48px; }
+  .start-art { display: none; }
+  .start-actions .btn-pixel { min-height: 42px; font-size: 12px; }
+}

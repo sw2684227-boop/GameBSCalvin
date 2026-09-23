@@ -46,13 +46,13 @@ const CalvinCycle = {
     this._drawConveyorRing(scene, cx, cy, R - 40);
     this._drawReturnRing(scene, cx, cy, R + 50);
     this.cycleDuration = this.getCycleDuration();
-    const lr = (typeof LightReaction !== 'undefined' && LightReaction) ? LightReaction : { GAIN_ATP: 2, GAIN_NADPH: 2, BOOST_GAIN_ATP: 4 };
+    const lr = (typeof LightReaction !== 'undefined' && LightReaction) ? LightReaction : { GAIN_ATP: 2, GAIN_NADPH: 2 };
     UI.updateChalkboard(
       'LIGHT: READY',
       '🌊 นำน้ำ H₂O ไปใส่กล่องของเครื่องขั้นแสงเพื่อผลิต ATP + NADPH',
       'บ่อน้ำ → กล่องน้ำเครื่อง Light Reaction → ATP + NADPH → คาลวิน',
       'เติมน้ำลงกล่องเครื่องขั้นแสง',
-      `ATP +${lr.GAIN_ATP} + NADPH +${lr.GAIN_NADPH} (มีแสง = ×${lr.BOOST_GAIN_ATP / lr.GAIN_ATP})`,
+      `ATP +${lr.GAIN_ATP} + NADPH +${lr.GAIN_NADPH} ต่อ H₂O`,
       'O₂ ปล่อยออกสู่บรรยากาศ'
     );
     UI.setActionButton('▶ เริ่มวัฏจักรคาลวิน (' + (this.cycleDuration / 1000).toFixed(1) + ' วิ/รอบ)', true, () => this.startCycle());

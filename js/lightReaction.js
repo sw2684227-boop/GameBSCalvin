@@ -6,7 +6,6 @@ const LightReaction = {
 
   // One load of water is processed in about one second.
   BASE_TICK_MS: 1000,
-  BOOST_TICK_MS: 1000,
   WATER_PER_TICK: 1,
   WATER_TANK_CAPACITY: 20,
   GAIN_ATP: 2,

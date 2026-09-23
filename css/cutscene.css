@@ -890,3 +890,29 @@
   .flow-arrow { font-size: 20px; }
   .tut-flow { top: 54%; }
 }
+
+/* Phone-friendly story and mission HUD. */
+@media (max-width: 768px) {
+  .tut-stage::before, .tut-stage::after { height: 3vh; }
+  .tut-content { bottom: 3vh; padding: 10px 12px max(10px, env(safe-area-inset-bottom)); gap: 8px; }
+  .tut-speaker { font-size: 12px; padding: 4px 12px; }
+  .tut-text { font-size: clamp(15px, 2.4vh, 20px); line-height: 1.55; max-width: 96%; }
+  .tut-controls { width: 100%; gap: 8px; }
+  .tut-btn { flex: 1; min-height: 44px; padding: 9px 12px; font-size: 13px; }
+  .tut-btn-skip { padding: 9px 10px; font-size: 12px; }
+  .tut-progress { top: max(10px, env(safe-area-inset-top)); gap: 5px; }
+  .tut-progress .pdot { width: 7px; height: 7px; border-width: 1px; }
+
+  #tutorial-hud { top: calc(env(safe-area-inset-top) + 82px); width: calc(100% - 20px); }
+  .tut-hud-frame { padding: 10px 12px; border-width: 2px; }
+  .tut-hud-head { gap: 6px; margin-bottom: 5px; }
+  .tut-hud-chip { font-size: 10px; padding: 2px 8px; }
+  .tut-hud-step { font-size: 9px; }
+  .tut-hud-actions .tut-btn { min-height: 38px; }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .tut-art { transform: scale(0.92); transform-origin: center top; }
+  .tut-content { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  .tut-text { font-size: clamp(14px, 2.2vh, 18px); }
+}

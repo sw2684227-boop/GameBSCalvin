@@ -21,6 +21,13 @@ const MainScene = new Phaser.Class({
       return t;
     };
     this._userZoom = 1;
+    // รอโหลดฟอนต์ Prompt/Sarabun เสร็จ แล้วเรนเดอร์ตัวอักษรในแมพใหม่ด้วยฟอนต์จริง
+    // (ตอนสร้างเนื้่อหา ฟอนต์ยังไม่โหลด -> ตกเป็นฟอนต์สำรองที่ดูเป็นพิกเซล)
+    if (typeof document !== 'undefined' && document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+      document.fonts.ready.then(() => {
+        setTimeout(() => this._refreshTextResolution(), 60);
+      });
+    }
     this.cameras.main.setBounds(0, 0, CONFIG.WORLD_WIDTH, CONFIG.WORLD_HEIGHT);
     this.cameras.main.setBackgroundColor(CONFIG.LOCATIONS.factory.bg);
     this.cameras.main.roundPixels = true;
@@ -60,7 +67,12 @@ UI.updateInventory();
   _setupScale() {
     const dpr = Math.min(window.devicePixelRatio || 1, 3);
     if (this.scale) {
-      this.scale.resolution = dpr;
+      // ScaleManager does not control the renderer backing store. Update the
+      // renderer so map labels keep their detail on high-DPR phone displays.
+      if (this.game && this.game.renderer && this.game.renderer.resolution !== dpr) {
+        this.game.renderer.resolution = dpr;
+        this.game.renderer.resize(this.scale.width, this.scale.height);
+      }
       this.scale.refresh();
       const canvas = this.game && this.game.canvas;
       if (canvas) {
@@ -75,6 +87,18 @@ UI.updateInventory();
       this.scale.height / CONFIG.WORLD_HEIGHT
     ) * (this._userZoom || 1);
     cam.setZoom(zoom);
+    this._refreshTextResolution();
+  },
+
+  // เรนเดอร์ตัวอักษรในแมพใหม่ให้ความละเอียดสูงพอ → ไม่เบลอ/ไม่เป็นพิกเซลทุกระดับซูม
+  _refreshTextResolution() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    const zoom = Math.max(this.cameras.main.zoom || 1, 0.2);
+    const res = Math.max(2, Math.min(6, Math.ceil(zoom * dpr)));
+    const texts = this.children.list.filter(c => c && c.type === 'Text');
+    for (const t of texts) {
+      if (typeof t.setResolution === 'function' && t.resolution !== res) t.setResolution(res);
+    }
   },
 
   zoomBy(delta) {
@@ -1141,13 +1165,15 @@ UI.updateInventory();
 const phaserConfig = {
   type: Phaser.AUTO,
   parent: 'center-panel',
+  // Render the canvas in device pixels while CSS keeps the game layout sized
+  // in normal pixels. This prevents map text from becoming blocky when small.
+  resolution: Math.min(window.devicePixelRatio || 1, 3),
   scale: {
     mode: Phaser.Scale.RESIZE,
     width: CONFIG.WORLD_WIDTH,
     height: CONFIG.WORLD_HEIGHT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     resizeInterval: 16,
-    resolution: Math.min(window.devicePixelRatio || 1, 3),
     autoRound: true
   },
   backgroundColor: '#2e7d32',

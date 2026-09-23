@@ -80,17 +80,9 @@ const SFX = {
         // ใส่ CO₂ เข้าเครื่อง
         this._tone(262, 0.1, 'square', 0.3, 0, 392);
         break;
-      case 'boost':
-        // เปิดบูสต์แสง
-        this._tone(523, 0.12, 'square', 0.28, 0);
-        this._tone(784, 0.14, 'square', 0.28, 0.06);
-        break;
       case 'produce':
         // Light Reaction ผลิต ATP+NADPH
         this._tone(220, 0.12, 'triangle', 0.4, 0, 330);
-        break;
-      case 'produceBoost':
-        this._seq([[523, 0.08, 'square', 0.3], [659, 0.08, 'square', 0.3], [784, 0.1, 'square', 0.3]], 0.05);
         break;
       case 'phase':
         // ก้าวเฟสของคาลวิน

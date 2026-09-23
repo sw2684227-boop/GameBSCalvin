@@ -8,7 +8,9 @@ const UI = {
       if (e.target.closest && e.target.closest('.btn-pixel') && typeof SFX !== 'undefined' && SFX.play) SFX.play('click');
     });
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 960) this.closeSidebars();
+      // Some landscape phones exceed 960 CSS px, but still use compact drawers.
+      const compactLandscape = window.matchMedia && window.matchMedia('(orientation: landscape) and (pointer: coarse) and (max-height: 620px)').matches;
+      if (window.innerWidth > 960 && !compactLandscape) this.closeSidebars();
     });
     this.syncSfxButton();
     this.initFullscreenGate();
@@ -404,9 +406,6 @@ const UI = {
     if (status === 'run') {
       el.textContent = prefix + '⚙ ทำงาน';
       el.classList.add('run');
-    } else if (status === 'boost') {
-      el.textContent = prefix + '⚡เร็ว ×2 (มีแสง)';
-      el.classList.add('boost');
     } else if (status === 'yield') {
       el.textContent = prefix + '⏳ ผลิต';
       el.classList.add('yield');
@@ -1821,9 +1820,9 @@ const MachineAnim = (() => {
     const above = L.memTop - (L.small ? 7 : 10);
     put(L.small ? 'PSII' : 'Photosystem II', L.psiiX - (L.small ? 15 : 22), above, 'right');
     put(L.small ? 'PSI' : 'Photosystem I', L.psiX - (L.small ? 15 : 22), above, 'right');
-    put('Pq', L.pqX, above);
+    put('PQ', L.pqX, above);
     put(L.small ? 'Cyt' : 'Cyt b₆f', L.cytX, above);
-    put('Pc', L.pcX, above);
+    put('PC', L.pcX, above);
     put('Fd', L.fdX - L.pw.fd / 2 - 3,
       Math.max(L.memTop - 3, L.sun1Y + L.sunR + 10), 'right');
     if (L.small || L.W < 400) {
@@ -1832,11 +1831,11 @@ const MachineAnim = (() => {
       const sx0 = L.sun1X - L.sunR, sx1 = L.sun1X + L.sunR;
       const sy0 = L.sun1Y - L.sunR, sy1 = L.sun1Y + L.sunR;
       if (bx0 < sx1 && bx1 > sx0 && by0 < sy1 && by1 > sy0)
-        put('NADPᴿ', L.nadpX, L.lumenTop + 12);
-      else put('NADPᴿ', L.tipX - 4, L.memTop - 6, 'right');
+        put('FNR', L.nadpX, L.lumenTop + 12);
+      else put('FNR', L.tipX - 4, L.memTop - 6, 'right');
     } else if (L.nadpX - 46 < L.sun1X + L.sunR + 6)
-      put('NADP⁺ Reductase', L.nadpX + L.pw.nadp / 2 + 6, L.memTop - 28, 'left');
-    else put('NADP⁺ Reductase', L.nadpX, L.memTop - 28);
+      put('FNR (NADP⁺ reductase)', L.nadpX + L.pw.nadp / 2 + 6, L.memTop - 28, 'left');
+    else put('FNR (NADP⁺ reductase)', L.nadpX, L.memTop - 28);
 
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(90,50,10,0.72)';
