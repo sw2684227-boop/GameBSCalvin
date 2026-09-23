@@ -16,6 +16,7 @@ const MainScene = new Phaser.Class({
     this._userZoom = 1;
     this.cameras.main.setBounds(0, 0, CONFIG.WORLD_WIDTH, CONFIG.WORLD_HEIGHT);
     this.cameras.main.setBackgroundColor(CONFIG.LOCATIONS.factory.bg);
+    this.cameras.main.roundPixels = true;
     this._setupScale();
     document.addEventListener('fullscreenchange', () => this._onResize());
     document.addEventListener('webkitfullscreenchange', () => this._onResize());
@@ -1145,11 +1146,11 @@ const phaserConfig = {
   backgroundColor: '#2e7d32',
   powerPreference: 'high-performance',
   pixelArt: false,
-  roundPixels: false,
+  roundPixels: true,
   antialias: true,
   render: {
     antialias: true,
-    roundPixels: false,
+    roundPixels: true,
     powerPreference: 'high-performance'
   },
   scene: [MainScene]

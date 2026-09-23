@@ -1720,6 +1720,7 @@ button {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
+  box-sizing: border-box;
   background: rgba(4, 10, 4, 0.92);
   z-index: 500;
   display: flex;
@@ -2638,7 +2639,7 @@ button {
 .panel-overlay.hidden { display: none !important; }
 
 #start-overlay { background: radial-gradient(ellipse at 50% 120%, #1d5c24, #0c2810 70%); }
-.start-frame { text-align: center; padding: 18px; animation: startIn 0.5s ease-out; }
+.start-frame { text-align: center; padding: 12px; max-height: calc(100dvh - 36px); width: 100%; overflow-y: auto; animation: startIn 0.5s ease-out; }
 @keyframes startIn { 0% { transform: scale(0.92); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 .start-art { position: relative; margin-bottom: 20px; }
 .start-sun {
